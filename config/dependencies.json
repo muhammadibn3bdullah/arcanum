@@ -1,0 +1,331 @@
+{
+  "schema_version": 1,
+  "generated_on": "2026-11-25",
+  "description": "Pinned, machine-readable dependency manifest for the standalone Arcanum installer. All download URLs are official GitHub release assets; checksums are the SHA-256 digests published by the GitHub Releases API on 2026-11-25.",
+  "repository": {
+    "name": "arcanum",
+    "url": "https://github.com/muhammadibn3bdullah/arcanum.git",
+    "python_package": "src/arcanum",
+    "test_command": "PYTHONPATH=src python -m pytest -q"
+  },
+  "checksum_policy": {
+    "rule": "Never fabricate a checksum. Every binary asset below carries the sha256 published by GitHub. Python packages are pinned by exact version and verified by pip over TLS against PyPI metadata; if a strict hash policy is required, generate a requirements-hashes.txt with `pip hash` in the target environment.",
+    "verify_command": "sha256sum <file> (Linux) / shasum -a 256 <file> (macOS) / Get-FileHash -Algorithm SHA256 <file> (PowerShell); compare with the sha256 field below.",
+    "empty_sha256_meaning": "Only release assets without a published digest may leave sha256 empty; the verification command above is mandatory in that case. No asset in this manifest has an empty checksum."
+  },
+  "python": {
+    "engine_min_version": "3.10",
+    "project_min_version": "3.12",
+    "venv_path": "venv",
+    "packages": {
+      "runtime": [
+        {
+          "name": "pydantic",
+          "required": ">=2.10",
+          "pinned": "2.14.4",
+          "purpose": "Model validation (declared in pyproject.toml)",
+          "sha256": null
+        },
+        {
+          "name": "discord.py",
+          "required": "discord.py",
+          "pinned": "2.7.1",
+          "purpose": "integrations/discord/bridge.py",
+          "sha256": null
+        },
+        {
+          "name": "mcp",
+          "required": "mcp",
+          "pinned": "2.3.0",
+          "purpose": "arcanum-gateway MCP server/tools",
+          "sha256": null
+        }
+      ],
+      "dev": [
+        {
+          "name": "pytest",
+          "required": ">=8",
+          "pinned": "9.2.0",
+          "purpose": "tests/ (PYTHONPATH=src)",
+          "sha256": null
+        }
+      ],
+      "verification": [
+        "<home>/venv/bin/python -m pip check",
+        "ARCANUM_HOME=<home> PYTHONPATH=<home>/src <home>/venv/bin/python -m pytest -q --rootdir <repo>"
+      ]
+    },
+    "notes": "The installer engine itself is standard-library only so the shell wrappers can run with system python3. Project code and tests require Python >=3.12 per pyproject.toml; the installer selects the newest available interpreter satisfying that when creating the venv."
+  },
+  "bun": {
+    "version": "1.4.5",
+    "repo": "oven-sh/bun",
+    "tag": "bun-v1.4.5",
+    "release_url": "https://github.com/oven-sh/bun/releases/tag/bun-v1.4.5",
+    "asset_url_template": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.5/{asset}",
+    "assets": {
+      "darwin-arm64": {
+        "asset": "bun-darwin-aarch64.zip",
+        "sha256": "b5d6bc2e13caf14e57c89661e89efd073ff16165b41bfe43882616410609cd10",
+        "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.5/bun-darwin-aarch64.zip"
+      },
+      "darwin-x64": {
+        "asset": "bun-darwin-x64.zip",
+        "sha256": "a4972e778cce4b6a194d7d289f326aa61576d71d80b7a53e9da2f3739566e5fd",
+        "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.5/bun-darwin-x64.zip"
+      },
+      "linux-x64": {
+        "asset": "bun-linux-x64.zip",
+        "sha256": "94559b3b528995a49452f9f2404cec74f2efd7d06e0a000a8cd214b02c3666eb",
+        "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.5/bun-linux-x64.zip"
+      },
+      "linux-arm64": {
+        "asset": "bun-linux-aarch64.zip",
+        "sha256": "18656a3bf0ea5641f5796ae4213b75255579a70a0fded2f337933785568cdf84",
+        "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.5/bun-linux-aarch64.zip"
+      },
+      "windows-x64": {
+        "asset": "bun-windows-x64.zip",
+        "sha256": "815ab45ec7f549abf87e6869584b506eab088e24225683957b7e150b47d6de30",
+        "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.5/bun-windows-x64.zip"
+      },
+      "windows-arm64": {
+        "asset": "bun-windows-aarch64.zip",
+        "sha256": "41f57d49c3c6811888d9633c569e40b4eb1f7e92b5e5336e3abd3af03187d77a",
+        "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.5/bun-windows-aarch64.zip"
+      }
+    },
+    "verification_note": "Bun is installed from a pinned GitHub release archive into ARCANUM_HOME/tools/bun/<version>, not by piping a remote install script into a shell.",
+    "dashboard": {
+      "source": "apps/dashboard",
+      "entrypoint": "server.ts",
+      "ui": "public/app.tsx",
+      "health_path": "/api/health",
+      "default_port": 13337,
+      "data_dir_env": "DATA_DIR",
+      "db_env": "ARCANUM_DB",
+      "install_command": "bun install --frozen-lockfile"
+    }
+  },
+  "opencode": {
+    "repo": "anomalyco/opencode",
+    "redirect_alias": "sst/opencode",
+    "verified_on": "2026-11-25",
+    "verification_note": "Verified with the GitHub REST API: GET https://api.github.com/repos/sst/opencode returns HTTP 301 -> /repositories/975734319 and GET https://github.com/sst/opencode returns HTTP 301 -> https://github.com/anomalyco/opencode. The v1.19.6 release API response has html_url=https://github.com/anomalyco/opencode/releases/tag/v1.19.6, is immutable=true, and was published 2026-11-17T07:21:32Z. All six requested CLI assets are on anomalyco/opencode, NOT on a separate sst/opencode repo. Canonical download URLs therefore use anomalyco/opencode; sst/opencode URLs still work through the redirect but are not hardcoded.",
+    "tag": "v1.19.6",
+    "release_url": "https://github.com/anomalyco/opencode/releases/tag/v1.19.6",
+    "assets": {
+      "windows-x64": {
+        "asset": "opencode-windows-x64.zip",
+        "sha256": "fa31c9ec0bac7611ab12699ef8e2fc4c173fb95ac977b09b189b255b8f559bcc",
+        "url": "https://github.com/anomalyco/opencode/releases/download/v1.19.6/opencode-windows-x64.zip"
+      },
+      "windows-arm64": {
+        "asset": "opencode-windows-arm64.zip",
+        "sha256": "dc72cf0cc9d5b434607e83efc4d172b19020bbc749842681fa195a4c051a4deb",
+        "url": "https://github.com/anomalyco/opencode/releases/download/v1.19.6/opencode-windows-arm64.zip"
+      },
+      "darwin-arm64": {
+        "asset": "opencode-darwin-arm64.zip",
+        "sha256": "c0be3f34dde2fdcb31b25120f303c6ed5b69b828f16e5e0fbecff21a882adda1",
+        "url": "https://github.com/anomalyco/opencode/releases/download/v1.19.6/opencode-darwin-arm64.zip"
+      },
+      "darwin-x64": {
+        "asset": "opencode-darwin-x64.zip",
+        "sha256": "39aabb10005059f80f007a119a33405dcd46325300993eb6cbcc961c7243dd31",
+        "url": "https://github.com/anomalyco/opencode/releases/download/v1.19.6/opencode-darwin-x64.zip"
+      },
+      "linux-x64": {
+        "asset": "opencode-linux-x64.tar.gz",
+        "sha256": "47734e08968b30cc22a0bffb6d9feeed76ad4aa743213a12122040392d09a057",
+        "url": "https://github.com/anomalyco/opencode/releases/download/v1.19.6/opencode-linux-x64.tar.gz"
+      },
+      "linux-arm64": {
+        "asset": "opencode-linux-arm64.tar.gz",
+        "sha256": "5b68c1f4c5e75b4134e664cc8f36d634d64208d4fcfe5bcf3b48bab699c2dbac",
+        "url": "https://github.com/anomalyco/opencode/releases/download/v1.19.6/opencode-linux-arm64.tar.gz"
+      }
+    }
+  },
+  "maestro": {
+    "repo": "RunMaestro/Maestro",
+    "tag": "v1.1.1-RC",
+    "release_url": "https://github.com/RunMaestro/Maestro/releases/tag/v1.1.1-RC",
+    "verified_on": "2026-11-25",
+    "note": "Official RunMaestro GitHub release assets ONLY. Do NOT install the unrelated mobile.dev Maestro CLI (mobile-next/maestro): no get.mobile.dev script is fetched or executed by this installer.",
+    "assets": {
+      "windows-x64": {
+        "setup": {
+          "asset": "Maestro-Setup-1.1.1-RC-x64.exe",
+          "sha256": "7957db53c35c52038f7c20d218b7ef52e4b92573b0a0a0181f53fd9524edafac",
+          "url": "https://github.com/RunMaestro/Maestro/releases/download/v1.1.1-RC/Maestro-Setup-1.1.1-RC-x64.exe"
+        },
+        "portable": {
+          "asset": "Maestro-Portable-1.1.1-RC-x64.exe",
+          "sha256": "71b7c4be4375c1d497caef90738d501cfb5fc1599b919b37a046d235098c2fec",
+          "url": "https://github.com/RunMaestro/Maestro/releases/download/v1.1.1-RC/Maestro-Portable-1.1.1-RC-x64.exe"
+        }
+      },
+      "darwin-arm64": {
+        "dmg": {
+          "asset": "maestro-1.1.1-RC-arm64-mac.dmg",
+          "sha256": "5dd5186ecd74d57fb70f3f3dbc226375ae64c6bcf361451788911f25e6332dfe",
+          "url": "https://github.com/RunMaestro/Maestro/releases/download/v1.1.1-RC/maestro-1.1.1-RC-arm64-mac.dmg"
+        },
+        "zip": {
+          "asset": "maestro-1.1.1-RC-arm64-mac.zip",
+          "sha256": "d7a7e209fc8ede03a6c7badaab68a5fe153069647f91a799d9115f192b4a6c5a",
+          "url": "https://github.com/RunMaestro/Maestro/releases/download/v1.1.1-RC/maestro-1.1.1-RC-arm64-mac.zip"
+        }
+      },
+      "darwin-x64": {
+        "dmg": {
+          "asset": "maestro-1.1.1-RC-x64-mac.dmg",
+          "sha256": "1bbd4dde9d69dcf37028c00a60844a5ece809847074a54f179db0e0d479ab577",
+          "url": "https://github.com/RunMaestro/Maestro/releases/download/v1.1.1-RC/maestro-1.1.1-RC-x64-mac.dmg"
+        },
+        "zip": {
+          "asset": "maestro-1.1.1-RC-x64-mac.zip",
+          "sha256": "0d51b291fc121b3cce47b7cbef486d918a901ae35867639c3954105ee8c5744d",
+          "url": "https://github.com/RunMaestro/Maestro/releases/download/v1.1.1-RC/maestro-1.1.1-RC-x64-mac.zip"
+        }
+      },
+      "linux-x64": {
+        "appimage": {
+          "asset": "maestro-1.1.1-RC-x86_64.AppImage",
+          "sha256": "152b1932061f8ce1fe075d0c669366973f400fa01126436d6e91e87320f84659",
+          "url": "https://github.com/RunMaestro/Maestro/releases/download/v1.1.1-RC/maestro-1.1.1-RC-x86_64.AppImage"
+        },
+        "deb": {
+          "asset": "maestro-1.1.1-RC-amd64.deb",
+          "sha256": "3cb60889d8be49d51f80934ae9370e5c400748e600d7b3edcda9a57701cda38e",
+          "url": "https://github.com/RunMaestro/Maestro/releases/download/v1.1.1-RC/maestro-1.1.1-RC-amd64.deb"
+        },
+        "rpm": {
+          "asset": "maestro-1.1.1-RC-x86_64.rpm",
+          "sha256": "14a9f60f444282f03d8a19d909fcbc969ed3c696ebc2d3d7dffdf7371dc19a5f",
+          "url": "https://github.com/RunMaestro/Maestro/releases/download/v1.1.1-RC/maestro-1.1.1-RC-x86_64.rpm"
+        }
+      },
+      "linux-arm64": {
+        "appimage": {
+          "asset": "maestro-1.1.1-RC-arm64.AppImage",
+          "sha256": "95311f59f22e7f0721ba5cf078de7fd90684a3c160f26cd303b9e519654dd778",
+          "url": "https://github.com/RunMaestro/Maestro/releases/download/v1.1.1-RC/maestro-1.1.1-RC-arm64.AppImage"
+        },
+        "deb": {
+          "asset": "maestro-1.1.1-RC-arm64.deb",
+          "sha256": "2cef263f6a58f07222ef99297293a6a49c06945ae4c40aff8767688404d9045b",
+          "url": "https://github.com/RunMaestro/Maestro/releases/download/v1.1.1-RC/maestro-1.1.1-RC-arm64.deb"
+        },
+        "rpm": {
+          "asset": "maestro-1.1.1-RC-aarch64.rpm",
+          "sha256": "f76edb41f68da379abbef8fdf9bce0e90405650f3b7635263a345925fcd605a3",
+          "url": "https://github.com/RunMaestro/Maestro/releases/download/v1.1.1-RC/maestro-1.1.1-RC-aarch64.rpm"
+        }
+      }
+    },
+    "unsupported": [
+      {
+        "platform": "windows-arm64",
+        "reason": "Maestro v1.1.1-RC publishes no Windows ARM64 asset (Windows is x64-only). The installer reports Unsupported and does not substitute the mobile.dev CLI."
+      }
+    ],
+    "version_command": "maestro-cli --version",
+    "expected_version": "1.1.1-RC"
+  },
+  "skills": {
+    "arcanum": [
+      "api-fingerprint-caido",
+      "interceptor",
+      "js_endpoint_extraction",
+      "lazy_chunk_downloader",
+      "silly_name"
+    ],
+    "source": "skills/arcanum",
+    "vendor": {
+      "claude-bughunter": {
+        "upstream": "https://github.com/elementalsouls/Claude-BugHunter",
+        "pinned_commit": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
+        "local_path": "skills/vendor/claude-bughunter",
+        "note": "Installer copies the vendored directory when present; otherwise it reports Needs manual action with the pinned commit. It never clones or checks out arbitrary refs."
+      }
+    },
+    "registry": "skills/registry/registry.json",
+    "registry_note": "skills/registry/registry.json is produced by another agent. If present, the installer reads additional skill entries from it; missing registry is non-fatal."
+  },
+  "opencode_config": {
+    "agents_template": "config/opencode.agents.json",
+    "agents_dir": "config/agents",
+    "default_posix": "~/.config/opencode",
+    "default_windows": "%APPDATA%\\opencode",
+    "managed_agents": [
+      "hackbot-lead",
+      "recon-agent",
+      "hunt-agent",
+      "validate-agent",
+      "report-agent"
+    ],
+    "backup_policy": "A timestamped .bak-<YYYYmmdd-HHMMSS> copy is written before any existing config file or agent definition is changed."
+  },
+  "maestro_config": {
+    "default_posix": "~/.config/maestro",
+    "default_windows": "%APPDATA%\\maestro",
+    "playbooks_source": "workflows/maestro/playbooks",
+    "playbooks_target": "<maestro-config>/playbooks/<date>-Arcanum-Cycle",
+    "no_overwrite": true
+  },
+  "runtime": {
+    "home": "~/.arcanum",
+    "home_env": "ARCANUM_HOME",
+    "layout": {
+      "bin": "<home>/bin",
+      "venv": "<home>/venv",
+      "tools": "<home>/tools",
+      "skills": "<home>/skills",
+      "src": "<home>/src",
+      "apps": "<home>/apps/dashboard",
+      "integrations": "<home>/integrations/discord",
+      "data": "<home>/data",
+      "logs": "<home>/logs",
+      "cache": "<home>/cache/downloads",
+      "discord_env": "<home>/discord/.env",
+      "state": "<home>/install-state.json",
+      "report": "<home>/install-report.json"
+    },
+    "databases": [
+      "arcanum.db",
+      "arcanum-approvals.sqlite",
+      "arcanum-grants.sqlite",
+      "arcanum-permission-audit.sqlite",
+      "arcanum-tabs.sqlite",
+      "data/hackbots.db"
+    ],
+    "database_policy": "Schema creation uses CREATE TABLE IF NOT EXISTS and migrations are incremental. Existing database files are never deleted, replaced, or seeded with new credentials."
+  },
+  "discord": {
+    "bridge": "integrations/discord/bridge.py",
+    "template_candidates": [
+      ".env.example",
+      "integrations/discord/.env.example"
+    ],
+    "destination": "<home>/discord/.env",
+    "file_mode": "0600",
+    "required_variables": [
+      "DISCORD_BOT_TOKEN",
+      "ALLOWED_USER_IDS",
+      "ALLOWED_CHANNEL_IDS"
+    ],
+    "secret_policy": "Secrets are prompted for interactively (getpass) and written only to the destination file under ARCANUM_HOME. Nothing secret is written into the repository, the status matrix, or logs."
+  },
+  "status_values": [
+    "Installed",
+    "Verified",
+    "Needs authentication",
+    "Needs manual action",
+    "Unsupported",
+    "Failed",
+    "Already present",
+    "Skipped"
+  ]
+}

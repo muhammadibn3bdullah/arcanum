@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hackbots Harness</title>
+    <style>
+      :root { color-scheme: dark; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      body { margin: 0; background: #0d1117; color: #e6edf3; font-size: 13px; }
+      header { padding: 14px 20px; border-bottom: 1px solid #30363d; display:flex; gap:18px; align-items:center; }
+      header h1 { font-size: 15px; margin: 0; color: #58a6ff; }
+      button, select, input, textarea { font: inherit; background: #161b22; color: #e6edf3; border: 1px solid #30363d; border-radius: 5px; padding: 5px 8px; }
+      button { cursor: pointer; background: #238636; border-color: #2ea043; }
+      button.secondary { background: #21262d; border-color: #30363d; }
+      button.danger { background: #6e2a2a; border-color: #a33; }
+      main { padding: 18px 20px; max-width: 1200px; }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { border-bottom: 1px solid #21262d; padding: 7px 9px; text-align: left; vertical-align: top; }
+      th { color: #8b949e; font-weight: 600; }
+      .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 12px; margin-bottom: 20px; }
+      .card { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 12px; }
+      .card b { font-size: 22px; display: block; }
+      .sev-critical, .sev-high { color: #ff7b72; } .sev-medium { color: #d29922; } .sev-low { color: #58a6ff; } .sev-info { color: #8b949e; }
+      .grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px; }
+      label { display:block; color:#8b949e; margin:8px 0 3px; }
+      .drawer { position:fixed; right:0; top:0; bottom:0; width:420px; background:#161b22; border-left:1px solid #30363d; padding:20px; overflow:auto; z-index:10; }
+      .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:10px; }
+      .muted { color:#8b949e; } pre { white-space:pre-wrap; word-break:break-all; background:#0d1117; padding:10px; border-radius:5px; }
+      .tag { display:inline-block; padding:2px 7px; border:1px solid #30363d; border-radius:10px; color:#8b949e; margin-right:5px; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

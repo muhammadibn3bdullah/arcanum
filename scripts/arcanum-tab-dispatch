@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+"""Registry-aware Maestro dispatcher for the Head Agent.
+
+This is the ONLY Maestro delegation command an Arcanum agent may run. It
+resolves (workflow_id, target_id, agent_id) through the authoritative tab
+registry and never accepts a caller-supplied tab ID. It cannot be used to
+create a duplicate tab for an already registered conversation.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+import uuid
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT / "src"))
+
+from arcanum.config.settings import Settings  # noqa: E402
+from arcanum.runtime import TabRegistry, maestro  # noqa: E402
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--workflow", required=True, help="workflow_id")
+    parser.add_argument("--target", required=True, help="authoritative target_id")
+    parser.add_argument("--agent", required=True, help="specialist agent id")
+    parser.add_argument("--prompt", default="", help="task prompt for initial dispatch")
+    parser.add_argument("--prompt-file", default="", help="read prompt from file")
+    parser.add_argument("--followup", default="", help="follow-up message to the registered tab")
+    parser.add_argument("--task-id", default="")
+    parser.add_argument("--execution-id", default="")
+    parser.add_argument("--lead-tab", default="", help="registered central Lead tab id")
+    parser.add_argument("--no-callback", action="store_true")
+    args = parser.parse_args()
+
+    settings = Settings()
+    registry = TabRegistry(settings.tab_registry_path)
+    task_id = args.task_id or f"task_{uuid.uuid4().hex[:10]}"
+    execution_id = args.execution_id or f"exec_{uuid.uuid4().hex[:8]}"
+
+    if args.followup:
+        mapping = registry.get_specialist(args.workflow, args.target, args.agent)
+        if not mapping:
+            print(json.dumps({
+                "success": False,
+                "error": "No registered specialist tab; dispatch the initial task first",
+            }))
+            return 2
+        tab_id = str(mapping["tab_id"])
+        result = maestro.send_followup(
+            tab_id, args.followup,
+            agent=args.agent, registry=registry,
+            workflow_id=args.workflow, target_id=args.target,
+            task_id=task_id, execution_id=execution_id,
+        )
+        registry.log_event(
+            args.workflow, args.target, args.agent, "agent_followup", tab_id,
+            "Head Agent follow-up via controlled wrapper",
+        )
+        print(json.dumps({
+            "success": True,
+            "mode": "followup",
+            "workflow_id": args.workflow,
+            "target_id": args.target,
+            "agent_id": args.agent,
+            "tab_id": tab_id,
+            "tab_reused": True,
+            "result": result,
+        }, indent=2))
+        registry.close()
+        return 0
+
+    prompt = args.prompt
+    if args.prompt_file:
+        prompt = Path(args.prompt_file).read_text(encoding="utf-8")
+    if not prompt.strip():
+        print(json.dumps({"success": False, "error": "--prompt or --prompt-file is required"}))
+        return 2
+
+    ack = maestro.dispatch(
+        agent=args.agent,
+        prompt=prompt,
+        task_id=task_id,
+        execution_id=execution_id,
+        workflow_id=args.workflow,
+        target_id=args.target,
+        registry=registry,
+        lead_tab_id=args.lead_tab,
+        notify_head=not args.no_callback,
+    )
+    print(json.dumps({
+        "success": True,
+        "mode": "dispatch",
+        "workflow_id": args.workflow,
+        "target_id": args.target,
+        "agent_id": args.agent,
+        "tab_id": ack.tab_id,
+        "specialist_tab_id": ack.specialist_tab_id,
+        "lead_tab_id": ack.lead_tab_id,
+        "tab_reused": ack.tab_reused,
+        "task_id": ack.task_id,
+        "execution_id": ack.execution_id,
+        "callback_id": ack.callback_id,
+        "transcript_cursor": ack.transcript_cursor,
+    }, indent=2))
+    registry.close()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

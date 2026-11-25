@@ -1,0 +1,4 @@
+interface:
+  display_name: "API Fingerprint Caido"
+  short_description: "Fingerprint APIs from Caido traffic"
+  default_prompt: "Use $api-fingerprint-caido to fingerprint the API for the target I provide from Caido traffic."

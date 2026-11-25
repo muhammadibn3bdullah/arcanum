@@ -1,0 +1,63 @@
+# --- Secrets and local environment -----------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+tokens/
+*.token
+
+# --- Runtime databases (local state under ~/.arcanum by default) -----------
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+arcanum.db
+arcanum-approvals.sqlite
+arcanum-tabs.sqlite
+hackbots.db
+
+# --- Python -----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+*.egg-info/
+.eggs/
+build/
+dist/
+!apps/dashboard/public/dist/
+!apps/dashboard/public/dist/app.js
+
+# --- JavaScript / Bun -------------------------------------------------------
+node_modules/
+*.tsbuildinfo
+# bun.lock is intentionally tracked for the dashboard.
+
+# --- Logs and local run data ------------------------------------------------
+*.log
+logs/
+.local/share/arcanum-logs/
+Targets/
+engagements/
+
+# --- Local overrides --------------------------------------------------------
+*.local
+*.local.*
+config/local/
+.arcanum/
+
+# --- Editors / OS -----------------------------------------------------------
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
