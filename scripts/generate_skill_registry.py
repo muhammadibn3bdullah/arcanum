@@ -49,7 +49,7 @@ def skill_entry(path: Path, source_kind: str) -> dict:
     skill_md = path / "SKILL.md"
     text = skill_md.read_text(encoding="utf-8", errors="replace")
     meta = frontmatter(text)
-    files = sorted(p for p in path.rglob("*") if p.is_file())
+    files = sorted((p for p in path.rglob("*") if p.is_file()), key=lambda p: p.relative_to(path).as_posix())
     tree_hash = hashlib.sha256()
     for file in files:
         tree_hash.update(file.relative_to(path).as_posix().encode())
