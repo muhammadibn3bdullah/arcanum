@@ -26,7 +26,7 @@ def sha256(path: Path) -> str:
 
 
 def main() -> int:
-    registry = json.loads((ROOT / "skills/registry/registry.json").read_text())
+    registry = json.loads((ROOT / "skills/registry/registry.json").read_text(encoding="utf-8"))
     errors = []
     seen = set()
     for entry in registry.get("skills", []):

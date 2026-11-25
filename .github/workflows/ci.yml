@@ -51,7 +51,7 @@ jobs:
             python scripts/validate_skill_registry.py
           elif [ -f skills/registry/registry.json ]; then
             echo "::notice::validator not present in this checkout; checking registry JSON only"
-            python -c "import json,pathlib; data=json.loads(pathlib.Path('skills/registry/registry.json').read_text()); assert isinstance(data.get('skills'), list)"
+            python -c "import json,pathlib; data=json.loads(pathlib.Path('skills/registry/registry.json').read_text(encoding='utf-8')); assert isinstance(data.get('skills'), list)"
           else
             echo "::notice::registry not present in this checkout; skipping registry validation"
           fi

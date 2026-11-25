@@ -20,7 +20,7 @@ def main() -> int:
     if not path.exists():
         print("dependency manifest missing")
         return 1
-    data = json.loads(path.read_text())
+    data = json.loads(path.read_text(encoding="utf-8"))
     errors = []
     for key in ("python", "bun", "opencode", "maestro", "skills", "runtime", "discord"):
         if key not in data:
