@@ -40,7 +40,7 @@ def main() -> int:
         if entry["skill_id"] in seen:
             errors.append(f"{entry['skill_id']}: duplicate registry entry")
         seen.add(entry["skill_id"])
-        files = sorted(p for p in skill_root.rglob("*") if p.is_file())
+        files = sorted((p for p in skill_root.rglob("*") if p.is_file()), key=lambda p: p.relative_to(skill_root).as_posix())
         h = hashlib.sha256()
         for file in files:
             h.update(file.relative_to(skill_root).as_posix().encode())
