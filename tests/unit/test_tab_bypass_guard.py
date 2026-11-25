@@ -118,8 +118,8 @@ def test_hardening_denies_raw_dispatch_and_allows_wrapper(tmp_path, monkeypatch)
 
 def test_arcanum_playbook_contains_no_raw_new_tab_dispatch():
     playbook = (
-        Path.home() / "Projects" / "hackbots-starter" / ".maestro" / "playbooks"
-        / "2026-11-24-Arcanum-Cycle" / "ARCANUM-01.md"
+        Path(__file__).resolve().parents[2]
+        / "workflows" / "maestro" / "playbooks" / "ARCANUM-01.md"
     )
     text = playbook.read_text(encoding="utf-8")
     assert "arcanum-tab-dispatch" in text

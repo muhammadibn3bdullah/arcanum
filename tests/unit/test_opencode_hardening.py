@@ -38,5 +38,7 @@ def test_main_and_specialist_agents_covered():
     ids = set(module.agent_ids())
     for agent in module.MAIN_AGENTS:
         assert agent in ids
-    assert "specialists/hunt-xss" in ids
-    assert "hunt-xss" in ids
+    # Standalone repositories do not ship the developer's local specialist
+    # files; skills are distributed under skills/ instead.
+    if module.SPECIALISTS.is_dir():
+        assert "hunt-xss" in ids
