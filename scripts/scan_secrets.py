@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKIP_DIRS = {
-    ".git", "node_modules", "dist", "__pycache__", "logs",
+    ".git", "node_modules", "dist", "__pycache__", "logs", ".venv", "venv",
     # Vendored third-party skills intentionally contain detection patterns and examples.
     "vendor", "licenses",
 }
