@@ -136,8 +136,8 @@ jobs:
 
       - name: Shared-room consistency test
         shell: bash
-        run: python -m pytest tests/unit/test_domain_rooms.py -q
+        run: python -m pytest tests/integration/test_domain_rooms.py -q
 
       - name: Execution verification test
         shell: bash
-        run: python -m pytest tests/unit/test_completion_verification.py -q
+        run: python -m pytest tests/integration/test_completion_verification.py -q

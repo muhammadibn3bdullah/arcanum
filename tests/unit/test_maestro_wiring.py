@@ -40,7 +40,7 @@ def test_wiring_preserves_permissions(tmp_path, monkeypatch):
     monkeypatch.setattr(module, "shutil", __import__("shutil"))
 
     module.main()
-    data = json.loads(config_path.read_text())
+    data = json.loads(config_path.read_text(encoding="utf-8"))
     assert data["agents"]["hackbot-lead"]["permissions"][0]["effect"] == "deny"
     assert "Master Orchestrator" in data["agents"]["hackbot-lead"]["system"]
     assert "Reconnaissance Agent" in data["agents"]["recon-agent"]["system"]

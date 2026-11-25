@@ -35,7 +35,7 @@ def test_five_custom_skills_present():
 
 
 def test_registry_matches_inventory():
-    registry = json.loads((ROOT / "skills/registry/registry.json").read_text())
+    registry = json.loads((ROOT / "skills/registry/registry.json").read_text(encoding="utf-8"))
     assert registry["skill_count"] == len(registry["skills"]) >= 80
     assert {s["skill_id"] for s in registry["skills"] if s["source"] == "arcanum"} == {
         "api-fingerprint-caido", "interceptor", "js_analysis",
@@ -51,7 +51,7 @@ def test_no_runtime_data_or_secrets_tracked():
 
 
 def test_installer_entry_points_are_documented():
-    readme = (ROOT / "README.md").read_text()
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert "install.sh" in readme
     assert "install.ps1" in readme
     assert "arcanum.git" in readme

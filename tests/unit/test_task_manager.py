@@ -36,7 +36,7 @@ def test_create_task_provisions_folder_for_declared_domain(tmp_path):
         assert (folder / name).is_file()
     assert (folder / "findings").is_dir()
     assert (folder / "evidence").is_dir()
-    assert "active_testing_authorized: **false**" in (folder / "scope.md").read_text()
+    assert "active_testing_authorized: **false**" in (folder / "scope.md").read_text(encoding="utf-8")
     assert tm.get_task(task.id) is not None
     assert len(tm.list_tasks()) == 1
 

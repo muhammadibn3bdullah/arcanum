@@ -105,7 +105,7 @@ def test_hardening_denies_raw_dispatch_and_allows_wrapper(tmp_path, monkeypatch)
     monkeypatch.setattr(module, "CONFIG", config)
     monkeypatch.setattr(module, "shutil", __import__("shutil"))
     module.main()
-    rules = json.loads(config.read_text())["agents"]["hackbot-lead"]["permissions"]
+    rules = json.loads(config.read_text(encoding="utf-8"))["agents"]["hackbot-lead"]["permissions"]
     assert any(
         r["action"] == "shell" and "maestro-cli dispatch" in r["resource"]
         and r["effect"] == "deny" for r in rules
