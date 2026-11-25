@@ -19,6 +19,13 @@
       "source_repository": "",
       "source_revision": "d9031de",
       "content_hash": "d33b419d4882c8b2183f5415f049634c354da0292bb6a599cc5f783b92e8014e",
+      "file_hashes": {
+        "SKILL.md": "25b45a900b71bb882c5ae5c76f5c827d84af56ae0cc5360e69dc2c15a9b95cae",
+        "agents/openai.yaml": "d6504dc73977cfbe47ef06e0a8de96bd9e3d5dba1d2159a0dcaa090985cb5454",
+        "references/http-fingerprinting.md": "e7d5898d13e2341b98486c39b9257d26f6de136a7b641d2c26c8f2a3071acfa6",
+        "scripts/collect_caido_api_traffic.py": "8e0d650e7d5642b50268b13e80a6c628dc0c7c81cb58efad7facc8376c36cacd",
+        "scripts/plan_http_fingerprint_probes.py": "a0300fcf4d79361d3c4397e17c444ef865c883833fc361f76823519f3138d108"
+      },
       "version": "0.1.0",
       "author": "Arcanum contributors",
       "license": "PENDING",
@@ -64,6 +71,11 @@
       "source_repository": "",
       "source_revision": "d9031de",
       "content_hash": "9dc63a3fc142d6f89aa69375ca49a273cac3cf2965693dfc58ac56891342bfc4",
+      "file_hashes": {
+        "SKILL.md": "dc6ea5d21f8f233c4cacb09974122a23ed7a3dd27620341a3b875a84fb363f71",
+        "references/command-catalog.md": "347a3bb5fff44d235ad35b3bbc1f42c03e22c7e849782b116dd54032b8c558e7",
+        "references/recipes.md": "452ed1f70776330a6bcd8dccf2ad0448d59922ed94881f2aba16ba265b11317a"
+      },
       "version": "0.1.0",
       "author": "Arcanum contributors",
       "license": "PENDING",
@@ -107,6 +119,10 @@
       "source_repository": "",
       "source_revision": "d9031de",
       "content_hash": "e3bc2236eca24f6f6377054b320822440906825034433fd327f43fdf0e27f2f9",
+      "file_hashes": {
+        "SKILL.md": "01b3e57473da75bb8c7a498274fa11dfbad11b7022c609a506f879ac8b3dff0a",
+        "scripts/extract_endpoints.sh": "75a3bf5dc49388f4532ef55ddf6cf1ad0054e874bd8d3479dc81c195be5c4468"
+      },
       "version": "0.1.0",
       "author": "Arcanum contributors",
       "license": "PENDING",
@@ -145,6 +161,10 @@
       "source_repository": "",
       "source_revision": "d9031de",
       "content_hash": "603c287a834052b686750cb357d3e495e1c9cd898c82a19e3e2a5f3abf2f914d",
+      "file_hashes": {
+        "SKILL.md": "181c190f21766151bc5fe15c593fb182d6ccb960a47e5a17171f49bbdcd5317e",
+        "scripts/fetch_lazy_chunks.js": "843016df1c9c8ff50a506ee0e7f9e48459df80f045725a6d45a27b458bed021c"
+      },
       "version": "0.1.0",
       "author": "Arcanum contributors",
       "license": "PENDING",
@@ -180,6 +200,10 @@
       "source_repository": "",
       "source_revision": "d9031de",
       "content_hash": "5e32f0366f6c5956d43ed19300767b9af4acdbf5e5a06ceb9ec0b01ed83cc8d4",
+      "file_hashes": {
+        "SKILL.md": "80a57211290fabcc0e96c6f30b18423bf2a47eca69fa358893620006dd6d3fba",
+        "silly.md": "553e8fdb4afaa35db806040f2452a8dc8ff557c78a2a94ed1fb7f010452e72da"
+      },
       "version": "0.1.0",
       "author": "Arcanum contributors",
       "license": "PENDING",
@@ -210,6 +234,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "ad04aa470d8a74d835049fd9a0851dc736f6c14395da5afcb233234bb3a37ba3",
+      "file_hashes": {
+        "SKILL.md": "402c191f641f4ba06cdc05201ee9df49d329b259e547b038a25ce3bbeafc862b"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -247,6 +274,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "cc9b7427153951b4db1a4aa3efe5938e379d7a67361440384ee988da18707560",
+      "file_hashes": {
+        "SKILL.md": "aca24c6f20b0646d2eb09fb3a9fb047a874783b56bbf1052c27a358c450e796f"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -284,6 +314,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "946b3371c7c3fe538cce13209378fe37a05c1d744635b7bba2cf1dc5f46a2ad8",
+      "file_hashes": {
+        "SKILL.md": "687af8873d8300652b7563320f45f7337138b5359eb77318f2031a0cbcce138c"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -316,6 +349,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "ec25f3154007438d7693df0dae750f2ac5b577f8d552726c26a18fae74a08f1e",
+      "file_hashes": {
+        "SKILL.md": "af193e75fe9204a3536ea5bda9cb1942cc5858240b94e70ab892b685cf1e5b44"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -353,6 +389,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "f3cdbcdce0233270131036df63c20da6641011125aa5ef441442de9e48a88ab1",
+      "file_hashes": {
+        "SKILL.md": "4db20c5b8a67d97849207627c3f01919c74574121fec5be4edf205ed78e165a3"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -390,6 +429,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "5e33f7ffcc77fbf6a3f354f4a9063186a4a575a17d3b5c0a87d332f2ebf14cea",
+      "file_hashes": {
+        "SKILL.md": "d495d06f40392ac410fadd40e35b0a3acbe921aba99a0a9946ed5b26abc64ea9"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -427,6 +469,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "479fcea9020b356693a8d4b3deff79d85422882e73b4b4a0efac110dbd376b03",
+      "file_hashes": {
+        "SKILL.md": "3efcc1022cf260a396dc3eba60808a6035ff5756fa2628a4dbfbe939eec5ead5"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -464,6 +509,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "e8f69f00ff07a0c3ccdeefd69ad350d80c9c48b5a2eae13db358effec529473b",
+      "file_hashes": {
+        "SKILL.md": "1200f715875c0d773e4d2e00691b92f06deb676e8ca7dafac0b8be19c168380c"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -501,6 +549,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "8567f83f09f1898732457f60e0f2600e0564808bab62162414f2edc8a0bdee62",
+      "file_hashes": {
+        "SKILL.md": "d27a00337ac1c708ddd7540e8425d6131c61af27cc964f4de3bf845372b6a8cd"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -538,6 +589,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "99be8096ba90df36c2ebcd85eb7e66f1a857a1dc27a3fbc6eb5fe19da693ab61",
+      "file_hashes": {
+        "SKILL.md": "1606594f88ee4e178ab61ece133e83c53db64733da838aa7bc016c9daa5f9755"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -574,6 +628,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "e5de15678ba1e7017a6ce3b0367e99f8beeaa73ed562964ed08a3e1ecbd3218f",
+      "file_hashes": {
+        "SKILL.md": "f2afcab5682c117c77259b1ead3eb746aeefaa70c07c019b581b79ede09c7596"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -611,6 +668,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "1184a8da6880c6ced03d2d8bb2da1fdfd74120efd5b15976b1f4ec56f693d264",
+      "file_hashes": {
+        "SKILL.md": "bfd90637ddc4299c41c5fc4edc628c0fcc13e06ac9b0e3b0245e4d4fbf17e1cf"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -648,6 +708,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "93c5f0a0d8fac5ab63bd096b0178dd2c09e3fbee2b6529cd5a009829b8eb941d",
+      "file_hashes": {
+        "SKILL.md": "cca90153a3154dc7b188addb2ec3da804cea91f0d619fb9e17e289dcd3c4b1ce"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -684,6 +747,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "35be7be0b1aa269c42bcddfa286fbdd37ef7038792aa0153fe83cd55f18a4b4e",
+      "file_hashes": {
+        "SKILL.md": "c498fee1e663deeebed2332ba9248cadee782b7f65e2b61089623b02fca1ce89"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -720,6 +786,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "6c75bb055c2480b8e666bfdb6ebbc2750b228a809b72dac45658413d73c6d14c",
+      "file_hashes": {
+        "SKILL.md": "a64dea2f7b69bcfbc6d03c21ca8fa0ddf78bc481ecc6531c9f6064737879f25d"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -757,6 +826,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "a2b2e1d570f4cc50e3ce7ebd2b8b5d53f06a4fea99b8dbf513b68d316e422c6e",
+      "file_hashes": {
+        "SKILL.md": "41faee06c8c8db7f2f509d7f5d169b82b7bb32588064aa192f7369c88a2c0bde"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -794,6 +866,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "fab7d51650de789b5ace77211b96c11f2a80c92e246a2a31a0b1b3bce0c3f29e",
+      "file_hashes": {
+        "SKILL.md": "4645e37a7695a36610ae3e86d8fc3f57b45fb8a56832aac7006cece481931bc2"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -831,6 +906,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "81e9f1defd267d5b81553ac93ee7008d8a18c0b022e8da1b5ee9936865b84a97",
+      "file_hashes": {
+        "SKILL.md": "4d47fdcec28fcce2e01ec9c3097cd7d1d2eda21d212ad13a2ceff770370cd939"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -863,6 +941,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "01f342faf64b3ff9a2b8f79399eaf663de2bf1d48316045dec9357b98b574312",
+      "file_hashes": {
+        "SKILL.md": "dff86dce91a6b5fa95b404cd025a16a5f5d94a1c992bfc275122530cb3b1b54e"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -900,6 +981,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "cc536638d62562265f56e3a4668d26ca9f7e72c62189c6a298a23d949ee08ba5",
+      "file_hashes": {
+        "SKILL.md": "00e0e9e866db6729eaf67361d3194be684b2712ea6f74b9701042beff4677f57"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -934,6 +1018,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "63a8c729c4be1ea0c1238c4ff8777e36bef73af134abf33cf238d471f0ee56af",
+      "file_hashes": {
+        "SKILL.md": "d311dce06a0715587abb25f7a28d946111b55d8439697d75e047f8a5a3cd3e79"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -971,6 +1058,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "fbcefaa890b55b27595ca2a91efea654b689a8e96cc0e49da1ccec2fd516d9c8",
+      "file_hashes": {
+        "SKILL.md": "4c30e08e46bc5721b12a7d92e237060c0ea440581f3295bc0912b28230ff168b"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1008,6 +1098,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "8beb8e4fefcf5eba32f94cfb39caf7614a69b2929ebe1fa0cc3c1b702d975fca",
+      "file_hashes": {
+        "SKILL.md": "b582c50d9f36d78d97a5d7eda3d70134e8c03ebfa968afd7119eb4ea476ae5c1"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1038,6 +1131,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "5bfea79fe3e56e526e7a253f7a197d21c544e66d6509a483906b84263d8b6571",
+      "file_hashes": {
+        "SKILL.md": "c3f6bdc38bdfc1304d0b2d5ecd3456f6e4a391941d0dad1346d875600cdc9f49"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1075,6 +1171,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "631f7ccbdf76a9507f38899e5eebb1dad64e199c4eb1c2d8b56f083a183be4b7",
+      "file_hashes": {
+        "SKILL.md": "dceb38f2a35b862989cf737068835e08da7b847a11989a7cf2998fb78e70bfd9"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1111,6 +1210,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "61d5fb2d1f7218f6d70070b16fc4d93382cb6777c1ee75885231fef645cf7645",
+      "file_hashes": {
+        "SKILL.md": "2ce6b6bd65376b22d9145997c4639edcc8b8033f646957e3e2c4b915e42eb52c"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1148,6 +1250,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "51f687b1c138b96998af5e8890d708fd8df432e196b7bb2cb76c8a716735f135",
+      "file_hashes": {
+        "SKILL.md": "9e3bb181f1cd9f772a9c8595c3e00b98c46c1401011add3338de9b6a0667e24c"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1185,6 +1290,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "25ee1f2b4efd04a23f6b05230ec9440bcdad44e50e00f396e273943fac694f03",
+      "file_hashes": {
+        "SKILL.md": "b484286559f091f3dc8cab21a43e47f4d7fbe00382f5bade799fb40c7101fb1e"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1220,6 +1328,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "0c4b17c2138c3647d2eb93d254f216d442b21eac442665fe83072ef50dc4d6ea",
+      "file_hashes": {
+        "SKILL.md": "5a2d5080566449b85f3e4e7d5a73d9a7465f126ae688ed7dafe9186cb30cb5ca"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1257,6 +1368,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "11c93e0e24acd81b05ea06078160f28c832585f2fd07fb655dee3a5bdbd1abfa",
+      "file_hashes": {
+        "SKILL.md": "e14cb7a2824064bf8292a271c5fb0a2e7866d3b4caa2562a0a4da30135bf032c"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1294,6 +1408,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "11c6171de1e48aea66627df2351cfa569bf5ff0d43d6c1ccd2297cfae61606e8",
+      "file_hashes": {
+        "SKILL.md": "ef6054768ad32a55d094884acaaa02b4bbe7d2efd811f64076bf38ff6defb8d1"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1331,6 +1448,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "9e01153747ec2846b8cd1090cb9d5c98fe30a1a35367a69a76aedf1d7ce467d3",
+      "file_hashes": {
+        "SKILL.md": "5fe67c0256124d39821d1d63eb45b8a6c0ca20ca2018c5aba7ead72b343ea51e"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1367,6 +1487,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "fb86015c4f6a5c0fae57acaed248ece685ae78c68decbcb307f0e12dc1180b42",
+      "file_hashes": {
+        "SKILL.md": "9ebd33dbdd534d08df689a4b7fd8a8dcef770d6d0358c0cf22252d2a8cf2da45"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1404,6 +1527,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "46d923f4286af60ee848b92cfaf87503b8774328de939d53c2e17ae768b7ed9f",
+      "file_hashes": {
+        "SKILL.md": "c264f8d251a21c88b127bfa831acd819e7363ec1b138bcecbf226dc98b74ed3e"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1432,6 +1558,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "f0487efd5ad764a035c8093cb9c4f8057d44a967d829e4dc402949bd8808f5af",
+      "file_hashes": {
+        "SKILL.md": "8ecbc4b840be4e814e600bd0d6b22aac179d5085a6ac8dc38aba238972deee51"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1466,6 +1595,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "4c6a20fc63d9f0cba4691444a928b51ebc330c5aa8aa9271a506cf1d606d41a5",
+      "file_hashes": {
+        "SKILL.md": "4598198a99ed4443603282d8ce2c1dabb382573ac23ac64aab029edbe921148f"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1503,6 +1635,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "0c51e87e3aaf1c60421a38189f140ec437014f200146c53087d259e52ddc86d1",
+      "file_hashes": {
+        "SKILL.md": "176725dc473a60e33d2d3b7614f634ee58544b6e5e96ec3b47cf1334a824bf3e"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1540,6 +1675,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "33f2d9b311b75b28502d8ba878fbcff06e69152c5c860a3e0b474ff292dbcbc3",
+      "file_hashes": {
+        "SKILL.md": "ae7a9fbd3a12ced888f36efc83b3b5cc16a219825a664a84b60c429bc4487a93"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1577,6 +1715,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "4c5b0ef899ebc727ef6f20bee6efb557a56ea5793e2b70a51a9ad01f49e62fce",
+      "file_hashes": {
+        "SKILL.md": "ccc93c6c750c37d941af16556ec3fa6d29ee5e71fa9ccf96aa29ab9f8be1251c"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1612,6 +1753,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "c1075bafe3867b31c7122fc9f0bf1faef7137b3705a3982bb475d771f5642bc7",
+      "file_hashes": {
+        "SKILL.md": "44968fc1b2ff3210e481aafbdf7f160d9a1fcbcce995df1edf0329cbff9b7658"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1649,6 +1793,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "887ec2ddded199daac163ee3bf61e50f30550579f74fb82daba7f042f3fae7c5",
+      "file_hashes": {
+        "SKILL.md": "453126b12df075d941f5a39552d4b17b623aaa692fe3d87442dae104384aafed"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1686,6 +1833,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "6101ff9037c23aea9d8a4c6d02fb8da907a82c76638de80ce3bc55e1fb062f8f",
+      "file_hashes": {
+        "SKILL.md": "1da165c46da0cb8c2ef9d4e110cb6b876081619b7d96acad43ff96850d2a029e"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1714,6 +1864,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "a12d1e7b6c56ac87f10085a909556af757ccabe6d9d4766b37bcb072c615f1b3",
+      "file_hashes": {
+        "SKILL.md": "b2090dbf732788d6eefa0556c99fb2ad3dc0b86b13f3cd7b8a88c55285bd8179"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1749,6 +1902,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "a09b8f3a05c7892f232546ae576116f24ab7d63c44fdb42b3ea9db32c3783b74",
+      "file_hashes": {
+        "SKILL.md": "5a10ab815e5c5949e59d0f997c358a8a4f3c6e2ca6b3145942ab701f8c98608c"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1783,6 +1939,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "291f1b5c6aea84f5e520a817fd0f9c2d59ef2fb55cdac6de215c73a91102b5e4",
+      "file_hashes": {
+        "SKILL.md": "6df5885eb5095adcaab95f54b88a919a0d7300e81d244b284a10a3d76a2c578f"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1820,6 +1979,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "e239750c0c4178c6290dbe8cc359dd938b1008759d4b607a268cae0077b15b77",
+      "file_hashes": {
+        "SKILL.md": "2ebe0e8acfc301a4986ac508cc5e032727e01f0246dff1df8b2073dcae2ea86f"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1851,6 +2013,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "31b3be62b6fbfa543b13d42830355f6f0818d5a71636c1e9cd60e08bb5b7b451",
+      "file_hashes": {
+        "SKILL.md": "05ef8cb632293ab8e0ae0399a7e5b08587e2645e778eb51377573cb4023de685"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1879,6 +2044,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "7d177feff0000f97d46e1b5c9791b4c9231d2af800ff9cd890a9495ce858089f",
+      "file_hashes": {
+        "SKILL.md": "eda49dc99c2775bf034a5f7d3b4b187061bc8a38d76e92ca3a598592fe1ad5ad"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1912,6 +2080,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "e667c4874045b3c869176d04a84b42ed5bae1a4dc784e0e59c1ba5551bdad199",
+      "file_hashes": {
+        "SKILL.md": "783248a920928a4aaa981c268be436af91a7d6251a29730d729a4f678f83c768"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1949,6 +2120,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "20ab19312f9e49a7bc75bfd991ff6e5b526d44b22ce6f203403547458410532f",
+      "file_hashes": {
+        "SKILL.md": "979b5530e0b7f99820a45d09e270ab02a0b373c5edad44981a5d7c9d1ec4ff07"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -1986,6 +2160,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "dcbb1a6fb975dc3d49d17aef65f66d2a2763300dde00a1e3a498c0118a68db98",
+      "file_hashes": {
+        "SKILL.md": "86246654cdbafbadf622e3d3a387f587512412df6e83f13a16db443223601140"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2014,6 +2191,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "ecbabdd68326bd098cfbc379ba8293d60e48a4b36e8972719eff1a609ffa1d65",
+      "file_hashes": {
+        "SKILL.md": "37070e08eb1d451408420c76a35cec184b4e9387a404dd512a8a0b7557641f32"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2051,6 +2231,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "8a2eeea0ebe5c54d3a0acef5ff49a80a7d6a5e5ea8d50b711a451d4c8cc4c379",
+      "file_hashes": {
+        "SKILL.md": "d7e1a5c418d8f86180d9e242c9e5e2fd186efe61b3633c68f914160586968ecc"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2088,6 +2271,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "500974bab1333acb291a749599cf22834cebd566e17d0b8f3c63176d281704ac",
+      "file_hashes": {
+        "SKILL.md": "05567a1fe7b58e95d28e0b5c5a2ca74372d4a1e7e1710ec872c51f30214bdcbc"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2125,6 +2311,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "3829f4692894fd041dfeba1da65b48e99e6dffa8542114423c5b269e2e3f02d5",
+      "file_hashes": {
+        "SKILL.md": "6c9a1741da8b328176c42c5673dc54e7dd2ae61dc414dbb40eb7ebad7b253a98"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2162,6 +2351,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "d5650ba1ba2e8e8dff4f3a2427006a9890f5c18f0fe2fbd00a88f5efffb4538f",
+      "file_hashes": {
+        "SKILL.md": "ab5146c6af333082fec036b3085838cd5beaa4d45dbd3b6e15791e0a85ea0e03"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2197,6 +2389,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "deb425b8960200675804a67b341616074e5768d5420635861ddd2f8f43b70b51",
+      "file_hashes": {
+        "SKILL.md": "6b37e5dde646cb603738915b39768e88685b8dd1aa53a4b7c5e04dfa491713f4"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2229,6 +2424,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "e38de9888df2591a50ba6c8580326173ba8fb6a32e39b047323e814a219331d8",
+      "file_hashes": {
+        "SKILL.md": "4602c5718f7a452f064b934d7f227b060e3767e9b6039f36aa10460291b61eeb"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2266,6 +2464,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "f0f5b21741dadee3c14ba59ed62577902eacd18fe0833d94808746ff1fabea87",
+      "file_hashes": {
+        "SKILL.md": "fc5627c37b1028172413285c322c76d1105ebffbbb5af4e0ca0eaa81811fd7c0"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2300,6 +2501,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "c0b75aff8a026264a22f623d5150621452ffdf88f75be013195be56224702c04",
+      "file_hashes": {
+        "SKILL.md": "e9723e4a78a3a2113efd88b0d49df02f9dded113569964d5b1b6aa2f592df058"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2337,6 +2541,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "a76a934e56802a4794e126e54a64808e8d9d6ad375837ffb58a42c7418f39b1c",
+      "file_hashes": {
+        "SKILL.md": "edab65afe43abcd2d0d19f7dde29c91f54fbd8720f66e9161a58a4552f1092af"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2374,6 +2581,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "0558ecbd8e63cc61a81800df3b342789803dca7b5016eb570ad00373fef9c90f",
+      "file_hashes": {
+        "SKILL.md": "aac68521ad4a90fa5a21777f2c1c3ac05a1dfc080e066e88b0ce42571f174ca3"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2408,6 +2618,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "9c06610bd151282b475903c6b092d7863c9af9998f9fd9bd57c9cc0951bcd7ef",
+      "file_hashes": {
+        "SKILL.md": "0c27faca993c6e83dcaad9a38cc8d95055c5599c7d6e19e642587cf4627f11f0"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2445,6 +2658,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "55fbcf29e9b5a83044136709f86d637b40274d816f42d6ec8e6bae25b4bb6a15",
+      "file_hashes": {
+        "SKILL.md": "11f68926ffab55ecf91f1027280cb6e16864432b62ba079973e11bca0d3dffc1"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2482,6 +2698,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "5244c14f5472cdf5213607c16bd2081e92c9f2f2ea4092644fb74f4e92b7ce37",
+      "file_hashes": {
+        "SKILL.md": "fad790ac05164299eff8f2206160d23b79d2508ac930721e3d8835d746443714"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2511,6 +2730,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "6820cbfe771b03f5188c246ec1b872a68521f5aa6c989144cdca78b0ac67fab1",
+      "file_hashes": {
+        "SKILL.md": "a74b466dfb2220787cd61c65860fa50c914b77c30151f04e63284a565c269069"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2547,6 +2769,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "95a336dbd3be458377cc860a486cab61083cc93685a39dc0f7c442e372bf3961",
+      "file_hashes": {
+        "SKILL.md": "714000c0b2891922fbbd6126a3110defe4fd9e1c405b5ebe0fe1685ecea169fe"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2584,6 +2809,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "420e7bcf8f62214f81540145fb8cfc7e9b7b92cbe95fc3744c0c63ee9c612b35",
+      "file_hashes": {
+        "SKILL.md": "8b76a543adc6972925639cda19699f7c5b0c2f1d5d03411aaf81115df6d759ce"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2621,6 +2849,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "cf6f4998b3c643db6dd7636392477651c255274887c40042d538331ab643327a",
+      "file_hashes": {
+        "SKILL.md": "e73eeb86751ac4578456e2058373cd02e812adcbbaec745c6733c78c2e147055"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2658,6 +2889,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "b5b0d66305acd2d95d5dbffcbae9a89f09fe4b5b1ae9cf00d1f347dc92c67b6d",
+      "file_hashes": {
+        "SKILL.md": "50179c536601c05b98979e19c9b84132f85930820f77bc600991889f0db9b9f4"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2691,6 +2925,30 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "89a4e5b280377908e60eb7102b7f8caabcb8f9e251ac4b72c3d5a7dfbbaa4eeb",
+      "file_hashes": {
+        "README.md": "467d1d3e6b762b22e67e7b72a24654c9a47603c70f563abe3377f6b49ecce5ed",
+        "SKILL.md": "2e0c2e55b604b3d51f79d135d9878c45dee0ca810abde53964ad8337d0a92a5b",
+        "references/breach-and-credentials.md": "bd848970020303eb1fe9f0f8bfc183b10c72bed91c5335623f32fa147e37a644",
+        "references/dork-corpus.md": "27a0ea33aae4a41f52414dc9fb416bc4ce9b9060ef9ce83ecd28c2e31358ff5a",
+        "references/helpers-and-automation.md": "18222d4f89ec8226f49bab3e2acdc178ca867730183030a63c8c943a1f0e8da3",
+        "references/identity-fabric.md": "e095650ee3363d749d06897f16fc6b18805f8b0eb9e6d38112ada00dfd7ebbf5",
+        "references/people-osint.md": "8224826d039efafb46404c139c7e9ab8f0d7ca2d9a3a84260c728067ce87dfb8",
+        "references/probes-and-wordlists.md": "0c8e3f606fc9cb5f98ac1359be8d7ca43d003e92df740c10980a1addb72b9dff",
+        "references/recon-stack.md": "02c4a55a4608a81e300e0b1d9e07c8c5efcd2f0ed3de0ce68287df9b954c9824",
+        "references/recon-techniques.md": "f0c26ac632a3d77c7958041370b68908c2b038dcb7500c84eb96a4045f1171e2",
+        "references/saas-public-surfaces.md": "8dd69304c0024f57923035b9e5b3c17f2c6e9d8aa07b534667b09c0c4f3ec916",
+        "references/secret-patterns.md": "e3dd03875a4c1f94a4e0877fdff1142c14ba17d95743f990ae5cb920e2b043d4",
+        "references/secret-validators.md": "cc5ca501bdcaf7563bc107e53e54b6fca1d17be34c5cd9cb8ab79cf6c02c3f98",
+        "references/sector-notes.md": "2610b772afd853d042bd01c3f8f4e70b3fb04ac48b75263ae46726ab08ac992f",
+        "references/severity-matrix.md": "9674805dd38d80191adb06811321304f04d4748cfee72327908985acfe56ea65",
+        "references/specialized-osint.md": "e42f9fbf55090951a759e5bdf6b2d2007f0fe236ff543d96bd36edc4b64013f4",
+        "references/tooling-install.md": "55832c19d864329443ad99c5ff44066a358ab65a776503623ed4462bb7d8af18",
+        "scripts/assets/FONT-LICENSE.txt": "f79142caf52f977164a13ec09ec82ffd993d8a3851c0afb15ac468c386ad9eff",
+        "scripts/assets/archivo-black.woff2": "85708ebde774bd39dfdc500c115421d4d07b036d30dff0c2ffc8e887421167fd",
+        "scripts/dashboard.py": "1263b26a4b2a577581ca41d27808c79a7c00426b33bf39a5c490cd88112116d8",
+        "scripts/h1_reference.py": "460e7df1146edb791ba4abac89e9116d1d3bc10511d0a4150109c1515c3f016d",
+        "scripts/secret_scan.py": "529456722af68af8aa66b779e78b921ef1fc4c391c3a4a63941481b6cd6081f9"
+      },
       "version": "3.0.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2750,6 +3008,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "ddf7424fc367e9fa84ac2dee12c74bf6dd2e65f981418857a64763b6bdf0f12f",
+      "file_hashes": {
+        "SKILL.md": "f52a55aca18604292d588fe5144bf1c5fed31e3c084c07cf9c15d90be3d3e589"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2787,6 +3048,10 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "e8e2690eb091c4ab6525c4539142b813a5c7c565a7e0af8844edba6a49edf3cd",
+      "file_hashes": {
+        "README.md": "b2d5e48b65339f4cc2a38a715a3a8b4298d67c8000efc695a553171693239cfe",
+        "SKILL.md": "05f857a9b014fc24dee9aacc3d4abcc5ca24ed66708fc652e933091d79b204a9"
+      },
       "version": "2.3",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2826,6 +3091,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "c7c77110d3c81de514debff7aeaa5e6295cdab09206f40885f53c176b20ff169",
+      "file_hashes": {
+        "SKILL.md": "83bd4e07fb5797e60d309ed694e5a5aaf94052ff49261252b3f2aec952dbaa2e"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2862,6 +3130,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "8746b964f56deed7850a26a20be2ba3cde168406acd7e7f3c031295345ec058f",
+      "file_hashes": {
+        "SKILL.md": "bbf42293aedfa03b65cb87d27ec16b811f7acf3d251191db0911e49a2f78dd45"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2890,6 +3161,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "f19836548c4e5d6f98c8e6ed10d2b73b24a5fd6a400587de8530da73839f3092",
+      "file_hashes": {
+        "SKILL.md": "ebd19b28a6fb970afec9e5ca5e40de33c1f5a3fa314faf8b0c354f15d00883a0"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2923,6 +3197,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "2ad0e5168c07208b9f3270d190f5c63f97857bbc9da31ae10486df8cf0c276da",
+      "file_hashes": {
+        "SKILL.md": "c464af95a0eee58ac68d804b4a5db796f77af35bf7acdb031667824655ed3813"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2960,6 +3237,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "c2247f2e48eafd17f58bcf857b4c0cb0566964812bf10cefa0e1b39102720442",
+      "file_hashes": {
+        "SKILL.md": "c33ecb1a5653501f532b714424aadb1cf8edc5759250b55a58a574b73cb9a0f0"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -2994,6 +3274,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "85bf20291ac2c3c8183a9c67a2a230e18180c89a90d6d422298b7f5cddaee23a",
+      "file_hashes": {
+        "SKILL.md": "4a63831cf5f775710682c38b7571ae806cd2ca8cd1cae2665359a180f2d8a73d"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -3031,6 +3314,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "599cad7de2d6bc31c293e200beca04195227368428cd32a2fadccf8b0a55ba56",
+      "file_hashes": {
+        "SKILL.md": "7dd455768e31aedefbce6d416952cb0fbb276a584889f21c8c8d0407e8745741"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -3066,6 +3352,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "a11680fc0bb4eaef3bc5799ecc6768c7667a9a7eca3bb6882d6f06d3897abf0d",
+      "file_hashes": {
+        "SKILL.md": "20a51bb02ad3ccf88fb565b367bd52059d2bc3837d2069432657b0aef1228042"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -3103,6 +3392,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "478eb933ad4df46b0b5cd0404e4c12014149bcbdd20df57b11a82599dee43d09",
+      "file_hashes": {
+        "SKILL.md": "929166c7eb3e8d6bc24e496e3c739151f32637a3946173cb864e5c9da19f0037"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",
@@ -3140,6 +3432,9 @@
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
       "content_hash": "b60b4729b355ebd5748dfff471186f2f0afbe6665a04a323695dabc1d12f1b54",
+      "file_hashes": {
+        "SKILL.md": "6f29b97b4fc944b8a8b258f73890ab17d5672d85ceedae2a955a825c98c8a06b"
+      },
       "version": "0.1.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",

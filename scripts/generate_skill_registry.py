@@ -76,6 +76,7 @@ def skill_entry(path: Path, source_kind: str) -> dict:
         "source_repository": "" if source_kind == "arcanum" else UPSTREAM,
         "source_revision": revision,
         "content_hash": tree_hash.hexdigest(),
+        "file_hashes": {p.relative_to(path).as_posix(): sha256(p) for p in files},
         "version": meta.get("version", "0.1.0"),
         "author": author,
         "license": license_name,

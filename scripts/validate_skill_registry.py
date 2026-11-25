@@ -52,10 +52,9 @@ def main() -> int:
                 local = hashlib.sha256()
                 local.update(rel.encode())
                 local.update(sha256(file).encode())
-                if local.hexdigest() != entry["content_hash"]:
-                    # Report the first file whose digest differs from the
-                    # generator's file ordering; full diagnosis follows.
-                    detail = f" first_diff={rel}"
+                expected = (entry.get("file_hashes") or {}).get(rel)
+                if expected and expected != sha256(file):
+                    detail = f" first_diff={rel} expected={expected[:12]} actual={sha256(file)[:12]}"
                     break
             errors.append(f"{entry['skill_id']}: content hash mismatch{detail}")
     disk = {
