@@ -21,7 +21,7 @@ def sha256(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as handle:
         for block in iter(lambda: handle.read(1024 * 1024), b""):
-            h.update(block.replace(b"\r\n", b"\n"))
+            h.update(block.replace(b"\r\n", b"\n").replace(b"\r", b"\n"))
     return h.hexdigest()
 
 
@@ -46,7 +46,18 @@ def main() -> int:
             h.update(file.relative_to(skill_root).as_posix().encode())
             h.update(sha256(file).encode())
         if h.hexdigest() != entry["content_hash"]:
-            errors.append(f"{entry['skill_id']}: content hash mismatch")
+            detail = ""
+            for file in files:
+                rel = file.relative_to(skill_root).as_posix()
+                local = hashlib.sha256()
+                local.update(rel.encode())
+                local.update(sha256(file).encode())
+                if local.hexdigest() != entry["content_hash"]:
+                    # Report the first file whose digest differs from the
+                    # generator's file ordering; full diagnosis follows.
+                    detail = f" first_diff={rel}"
+                    break
+            errors.append(f"{entry['skill_id']}: content hash mismatch{detail}")
     disk = {
         p.parent.name
         for folder in ("skills/arcanum", "skills/vendor/claude-bughunter")

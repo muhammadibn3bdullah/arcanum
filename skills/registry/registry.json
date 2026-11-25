@@ -2690,7 +2690,7 @@
       "source": "claude-bughunter",
       "source_repository": "https://github.com/elementalsouls/Claude-BugHunter",
       "source_revision": "6a530fb3149c8c34d3ba0eb31b4eb431e91da648",
-      "content_hash": "1faed559443934e1a379983d2fb5bd65fdfcf71d746e7f137e6cc2f34397a8f3",
+      "content_hash": "89a4e5b280377908e60eb7102b7f8caabcb8f9e251ac4b72c3d5a7dfbbaa4eeb",
       "version": "3.0.0",
       "author": "Claude BugHunter contributors",
       "license": "CC-BY-4.0 (content); MIT (code)",

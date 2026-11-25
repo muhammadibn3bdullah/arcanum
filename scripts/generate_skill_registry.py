@@ -29,7 +29,7 @@ def sha256(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as handle:
         for block in iter(lambda: handle.read(1024 * 1024), b""):
-            h.update(block.replace(b"\r\n", b"\n"))
+            h.update(block.replace(b"\r\n", b"\n").replace(b"\r", b"\n"))
     return h.hexdigest()
 
 
