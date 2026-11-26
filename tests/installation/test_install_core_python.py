@@ -10,6 +10,7 @@ that creates config/cache/state directories as a side effect).
 from __future__ import annotations
 
 import importlib.util
+import shutil
 import sys
 from pathlib import Path
 
@@ -211,9 +212,17 @@ def test_check_reports_python_verified_and_succeeds_write_free(tmp_path, monkeyp
     assert rows["Python"].status == "Verified", rows["Python"]
     assert not reporter.bad(), reporter.as_dict()
     assert result == 0
-    # PATH-installed tools are detected statically, never executed.
+    # PATH-installed tools are detected statically, never executed. A fresh CI
+    # runner may legitimately report "Needs manual action" for a tool that is
+    # not on PATH, so only assert static detection for tools shutil.which can
+    # actually resolve on this platform (POSIX scripts here are not valid
+    # Windows executables).
     for name in ("bun", "opencode"):
-        assert str(fake_bin / name) in rows[name].detail, rows[name]
+        on_path = shutil.which(name)
+        if on_path:
+            assert on_path in rows[name].detail, rows[name]
+        else:
+            assert rows[name].status == "Needs manual action", rows[name]
     assert not sentinel.exists(), "a tool was executed during --check"
     assert not arc_home.exists(), "--check created ARCANUM_HOME"
     assert not home.exists(), "--check wrote under HOME"
@@ -227,11 +236,20 @@ def test_step_tool_check_reports_path_installed_tool_without_executing(tmp_path,
     fake_bin = tmp_path / "fakebin"
     fake_bin.mkdir()
     sentinel = tmp_path / "tool-runs.log"
-    tool = fake_bin / "bun"
-    tool.write_text(
-        "#!/bin/sh\nprintf '%s\\n' \"$0\" >> \"$SENTINEL_DIR/tool-runs.log\"\nexit 0\n",
-        encoding="utf-8",
-    )
+    tool = fake_bin / f"bun{core.SH_SUFFIX}"
+    if core.IS_WINDOWS:
+        # Windows resolves PATH tools through PATHEXT; an extensionless POSIX
+        # shell script named "bun" is invisible to shutil.which().
+        tool.write_text(
+            '@echo %~nx0>>"%SENTINEL_DIR%\\tool-runs.log"\r\nexit /b 0\r\n',
+            encoding="utf-8",
+        )
+        monkeypatch.setenv("PATHEXT", ".COM;.EXE;.BAT;.CMD")
+    else:
+        tool.write_text(
+            "#!/bin/sh\nprintf '%s\\n' \"$0\" >> \"$SENTINEL_DIR/tool-runs.log\"\nexit 0\n",
+            encoding="utf-8",
+        )
     tool.chmod(0o755)
     monkeypatch.setenv("PATH", str(fake_bin))
     monkeypatch.setenv("SENTINEL_DIR", str(tmp_path))

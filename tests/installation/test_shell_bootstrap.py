@@ -10,16 +10,27 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import platform
 import re
 import shutil
 import subprocess
 import tarfile
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 INSTALL_SH = ROOT / "installers" / "install.sh"
 COMMON_SH = ROOT / "installers" / "bootstrap" / "common.sh"
 MANIFEST = ROOT / "config" / "dependencies.json"
+
+# These tests drive the bash installer directly. On Windows the available
+# bash is WSL, which has no installed distributions on a fresh CI runner;
+# the PowerShell bootstrap is covered by test_powershell_bootstrap.py instead.
+pytestmark = pytest.mark.skipif(
+    platform.system() == "Windows",
+    reason="bash bootstrap tests require a POSIX shell; PowerShell tests cover Windows",
+)
 
 
 def run_bash(args: list[str], *, env: dict[str, str] | None = None, cwd: Path | None = None):

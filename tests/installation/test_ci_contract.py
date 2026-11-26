@@ -79,6 +79,15 @@ def test_ci_parses_powershell_scripts_with_windows_powershell():
     assert "bootstrap.ps1" in text
 
 
+def test_ci_five_skill_snippet_registers_module_before_exec():
+    """The inline snippet must register install_core for Python 3.12 dataclasses."""
+    step = ci_text().split("Five-skill inventory verification", 1)[1]
+    snippet = step.split("python - <<'PY'", 1)[1].split("\nPY", 1)[0]
+    assert "import sys" in snippet
+    assert "sys.modules[_MODULE_NAME] = core" in snippet
+    assert snippet.index("sys.modules[") < snippet.index("exec_module(core)")
+
+
 # --- Documentation contract --------------------------------------------------
 
 
