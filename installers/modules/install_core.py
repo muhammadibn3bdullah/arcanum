@@ -46,6 +46,8 @@ STAMP_TIME = "%Y%m%d-%H%M%S"
 CHUNK = 1024 * 1024
 MANAGED_MARKER = "# Managed by the Arcanum installer"
 PLAYBOOK_MARKER = ".arcanum-installed.json"
+BOOTSTRAP_PYTHON_ENV = "ARCANUM_BOOTSTRAP_PYTHON"
+MIN_PYTHON = (3, 12)
 
 AGENTS = [
     "hackbot-lead",
@@ -766,8 +768,56 @@ def python_script_wrapper(
 # Installation steps
 # ---------------------------------------------------------------------------
 
-def choose_python() -> str | None:
-    """Find an interpreter >= the project minimum (3.12), preferring newest."""
+def interpreter_command(interpreter: str) -> list[str]:
+    """Return argv that invokes ``interpreter``.
+
+    A bootstrapped interpreter is an absolute path (which may contain spaces),
+    so it must be kept as one argument. A launcher such as ``py -3.12`` is a
+    command with arguments and is split accordingly.
+    """
+    if Path(interpreter).exists() or os.path.isabs(interpreter):
+        return [interpreter]
+    return interpreter.split()
+
+
+def python_version_tuple(command: list[str]) -> tuple[int, int] | None:
+    """Ask an interpreter for its ``(major, minor)`` version by running it."""
+    out = command_output(
+        command + ["-c", "import sys; print('%d.%d' % sys.version_info[:2])"],
+        timeout=20,
+    )
+    match = re.match(r"(\d+)\.(\d+)", out)
+    if match:
+        return (int(match.group(1)), int(match.group(2)))
+    return None
+
+
+def choose_python(injected: str | None = None, *, check_only: bool = False) -> str | None:
+    """Find an interpreter >= the project minimum (3.12), preferring newest.
+
+    ``injected`` is the absolute path produced by the shell/PowerShell bootstrap
+    and passed through ``--python`` / ``ARCANUM_BOOTSTRAP_PYTHON``. It is
+    preferred over any host interpreter.
+
+    Under ``check_only`` no external tool is executed at all: an injected path
+    is accepted only when it exists on disk, and without an injected path no
+    interpreter is reported so the caller can emit an Unsupported / Needs
+    manual action row without any filesystem writes. Version verification is
+    deferred to a real (non-check) run.
+    """
+    if injected:
+        candidate = injected.strip()
+        if not candidate:
+            return None
+        if check_only:
+            return candidate if Path(candidate).expanduser().exists() else None
+        version = python_version_tuple(interpreter_command(candidate))
+        if version is not None and version >= MIN_PYTHON:
+            return candidate
+        return None
+    if check_only:
+        return None
+
     candidates: list[str] = []
     if IS_WINDOWS:
         candidates.append("py -3.12")
@@ -776,38 +826,63 @@ def choose_python() -> str | None:
     candidates.extend(["python3", "python", sys.executable])
     seen: set[str] = set()
     for candidate in candidates:
-        parts = candidate.split()
-        exe = shutil.which(parts[0]) if len(parts) == 1 else shutil.which(parts[0])
+        parts = interpreter_command(candidate)
+        exe = shutil.which(parts[0])
         if not exe:
             continue
-        cmd = [exe] + parts[1:] + ["-c", "import sys; print('%d.%d' % sys.version_info[:2])"]
-        out = command_output(cmd, timeout=20)
-        match = re.match(r"(\d+)\.(\d+)", out)
-        if match and (int(match.group(1)), int(match.group(2))) >= (3, 12):
-            key = " ".join([exe] + parts[1:])
+        command = [exe, *parts[1:]]
+        version = python_version_tuple(command)
+        if version is not None and version >= MIN_PYTHON:
+            key = " ".join(command)
             if key not in seen:
                 seen.add(key)
                 return key
     return None
 
 
-def step_python(paths: Paths, manifest: dict[str, Any], reporter: Reporter, state: dict[str, Any], *, check_only: bool, skip_tests: bool) -> None:
-    py = choose_python()
+def step_python(
+    paths: Paths,
+    manifest: dict[str, Any],
+    reporter: Reporter,
+    state: dict[str, Any],
+    *,
+    check_only: bool,
+    skip_tests: bool,
+    injected_python: str | None = None,
+) -> None:
+    injected = injected_python or os.environ.get(BOOTSTRAP_PYTHON_ENV)
+    py = choose_python(injected, check_only=check_only)
+    if injected:
+        if py:
+            if check_only:
+                reporter.add(
+                    "Bootstrap Python",
+                    "Needs manual action",
+                    f"bootstrapped interpreter at {injected} found; version verification requires a non-check run",
+                )
+            else:
+                reporter.add("Bootstrap Python", "Verified", f"bootstrapped interpreter: {injected}")
+        else:
+            reporter.add("Bootstrap Python", "Unsupported", f"bootstrapped interpreter is not usable: {injected}")
     if not py:
         reporter.add("Python", "Unsupported", "no Python >=3.12 interpreter found (pyproject.toml requires >=3.12)")
         return
     reporter.add("Python", "Verified", f"project interpreter: {py}")
+    state["python"] = {"interpreter": py}
 
     if paths.venv_python.exists():
-        current = command_output([paths.venv_python, "--version"])
-        reporter.add("Python venv", "Already present", f"{paths.venv_python} ({current})")
+        if check_only:
+            reporter.add("Python venv", "Already present", f"{paths.venv_python} (version not verified in --check)")
+        else:
+            current = command_output([paths.venv_python, "--version"])
+            reporter.add("Python venv", "Already present", f"{paths.venv_python} ({current})")
     elif check_only:
         reporter.add("Python venv", "Needs manual action", f"not created: {paths.venv}")
         return
     else:
         paths.home.mkdir(parents=True, exist_ok=True)
-        parts = py.split()
-        result = run(parts + ["-m", "venv", str(paths.venv)], timeout=600)
+        parts = interpreter_command(py)
+        result = run([*parts, "-m", "venv", str(paths.venv)], timeout=600)
         if result is None or result.returncode != 0:
             reporter.add("Python venv", "Failed", (result.stdout if result else "")[-400:])
             return
@@ -951,8 +1026,14 @@ def step_tool(
     asset = assets[key]
 
     existing = None
-    for candidate in [paths.bin / f"{name}{SH_SUFFIX}", Path(shutil.which(name) or "") if shutil.which(name) else None]:
+    on_path = shutil.which(name) if not check_only else None
+    for candidate in [paths.bin / f"{name}{SH_SUFFIX}", Path(on_path) if on_path else None]:
         if candidate and candidate.exists():
+            if check_only:
+                # Running a tool such as `opencode --version` creates config,
+                # cache and state directories. --check only does static checks.
+                existing = candidate
+                continue
             observed = version_of(candidate)
             if expected and expected.lstrip("v") in observed.lstrip("v"):
                 reporter.add(name, "Verified", f"{observed} at {candidate}")
@@ -961,7 +1042,11 @@ def step_tool(
                 existing = candidate
     if check_only:
         if existing:
-            reporter.add(name, "Needs manual action", f"{existing} is version {version_of(existing)}, pinned is {expected}")
+            reporter.add(
+                name,
+                "Needs manual action",
+                f"{existing} present; version verification requires a non-check run (pinned {expected})",
+            )
         else:
             reporter.add(name, "Needs manual action", f"not found; pinned {expected} asset: {asset.get('url')}")
         return None
@@ -1063,6 +1148,26 @@ def step_maestro(
     electron, js = find_maestro_pair(paths)
     wrapper = paths.bin / f"maestro-cli{SH_SUFFIX}"
 
+    if check_only:
+        # Never run the Electron/CLI wrapper in a dry run: --version can write
+        # into config/cache/state directories. Use file-based detection only.
+        if wrapper.exists() and wrapper.is_file():
+            reporter.add(
+                "Maestro",
+                "Needs manual action",
+                f"wrapper present at {wrapper}; version verification requires a non-check run",
+            )
+        elif electron and js:
+            reporter.add("Maestro", "Needs manual action", f"bundled CLI found at {js}; version not verified in --check")
+        else:
+            sample = next(iter(platform_assets.values()), {}) if isinstance(platform_assets, dict) else {}
+            reporter.add(
+                "Maestro",
+                "Needs manual action",
+                f"not installed; official asset URL: {sample.get('url', section.get('release_url', ''))}",
+            )
+        return
+
     def bundled_version(binary: Path, script: Path) -> str:
         result = run(
             [binary, script, "--version"],
@@ -1083,9 +1188,6 @@ def step_maestro(
         observed = bundled_version(electron, js)
         if expected and expected in observed:
             reporter.add("Maestro", "Verified", f"bundled CLI {expected} at {js}")
-            return
-        if check_only:
-            reporter.add("Maestro", "Needs manual action", f"bundled CLI found at {js}; version not verified")
             return
         if not skip_downloads:
             backups: list[str] = []
@@ -1216,7 +1318,7 @@ def step_dashboard(
         return
     if check_only:
         reporter.add("Dashboard source", "Verified" if (source / "server.ts").exists() else "Failed", str(source))
-        reporter.add("Dashboard health", "Verified" if http_ok(health) else "Needs manual action", health)
+        reporter.add("Dashboard health", "Needs manual action", f"runtime health not probed in --check: {health}")
         return
     copy_tree(source, dest)
     reporter.add("Dashboard source", "Installed", f"copied to {dest} (no repo files changed)")
@@ -1717,7 +1819,15 @@ def cmd_install(paths: Paths, manifest: dict[str, Any], reporter: Reporter, args
         reporter.add("Preflight", "Failed", "write permissions missing; aborting without changes")
         return finish(reporter, paths, args)
     if args.check:
-        step_python(paths, manifest, reporter, state, check_only=True, skip_tests=args.skip_tests)
+        step_python(
+            paths,
+            manifest,
+            reporter,
+            state,
+            check_only=True,
+            skip_tests=args.skip_tests,
+            injected_python=args.python,
+        )
         step_databases(paths, reporter, state, check_only=True)
         step_tool("bun", manifest.get("bun", {}), paths, reporter, check_only=True, skip_downloads=True, timeout=args.timeout)
         step_tool("opencode", manifest.get("opencode", {}), paths, reporter, check_only=True, skip_downloads=True, timeout=args.timeout)
@@ -1736,7 +1846,15 @@ def cmd_install(paths: Paths, manifest: dict[str, Any], reporter: Reporter, args
     paths.cache.mkdir(parents=True, exist_ok=True)
     paths.logs.mkdir(parents=True, exist_ok=True)
 
-    step_python(paths, manifest, reporter, state, check_only=False, skip_tests=args.skip_tests)
+    step_python(
+        paths,
+        manifest,
+        reporter,
+        state,
+        check_only=False,
+        skip_tests=args.skip_tests,
+        injected_python=args.python,
+    )
     step_databases(paths, reporter, state, check_only=False)
     bun = step_bun(paths, manifest, reporter, args.skip_downloads, args.timeout)
     opencode = step_opencode(paths, manifest, reporter, args.skip_downloads, args.timeout)
@@ -1875,6 +1993,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("command", choices=["install", "uninstall"])
     parser.add_argument("--check", action="store_true", help="preflight/dry-run only; no filesystem changes")
     parser.add_argument("--non-interactive", action="store_true", help="never prompt; report auth/manual steps instead")
+    parser.add_argument(
+        "--python",
+        help=(
+            "absolute path to the interpreter bootstrapped by install.sh/install.ps1 "
+            "(default: ARCANUM_BOOTSTRAP_PYTHON, then the newest host Python >=3.12)"
+        ),
+    )
     parser.add_argument("--prefix", help="base directory for bin/ and tools/ (default: ARCANUM_HOME)")
     parser.add_argument("--home", help="override ARCANUM_HOME (default: env ARCANUM_HOME or ~/.arcanum)")
     parser.add_argument("--repo", help="override repository root (default: parent of installers/)")
