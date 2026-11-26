@@ -269,6 +269,12 @@ def test_step_tool_check_reports_path_installed_tool_without_executing(tmp_path,
     assert found is None  # --check never returns an executable path
     row = reporter.rows[-1]
     assert row.component == "bun"
-    assert str(tool) in row.detail, row
+    if core.IS_WINDOWS:
+        # shutil.which() resolves PATH tools via PATHEXT and reports the
+        # extension with PATHEXT's casing (e.g. ``bun.CMD``). Windows paths
+        # are case-insensitive, so compare the reported detail case-folded.
+        assert str(tool).lower() in row.detail.lower(), row
+    else:
+        assert str(tool) in row.detail, row
     assert row.status == "Needs manual action", row
     assert not sentinel.exists(), "step_tool executed a PATH tool during --check"
