@@ -56,6 +56,16 @@ AGENTS = [
     "validate-agent",
     "report-agent",
 ]
+EXPECTED_ARCANUM_SKILLS = (
+    "api-fingerprint-caido",
+    "interceptor",
+    "js_analysis",
+    "lazy_chunk_downloader",
+    "say_hello",
+)
+EXPECTED_VENDORED_SKILL_COUNT = 83
+EXPECTED_SKILL_COUNT = 88
+VENDOR_SOURCE = "claude-bughunter"
 
 
 # ---------------------------------------------------------------------------
@@ -1391,6 +1401,303 @@ def step_dashboard(
         reporter.add("Dashboard health", "Failed", f"server did not become healthy; see {logfile}")
 
 
+# ---------------------------------------------------------------------------
+# Skill inventory verification
+# ---------------------------------------------------------------------------
+
+def skill_file_sha256(path: Path) -> str:
+    """SHA-256 with line endings normalized as in scripts/generate_skill_registry.py."""
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(CHUNK), b""):
+            digest.update(chunk.replace(b"\r\n", b"\n").replace(b"\r", b"\n"))
+    return digest.hexdigest()
+
+
+def skill_content_hash(skill_dir: Path) -> str:
+    """Recompute the registry ``content_hash`` from the files on disk."""
+    digest = hashlib.sha256()
+    files = sorted(
+        (p for p in skill_dir.rglob("*") if p.is_file()),
+        key=lambda p: p.relative_to(skill_dir).as_posix(),
+    )
+    for file in files:
+        digest.update(file.relative_to(skill_dir).as_posix().encode("utf-8"))
+        digest.update(skill_file_sha256(file).encode("utf-8"))
+    return digest.hexdigest()
+
+
+def registry_skill_roots(repo: Path) -> dict[str, Path]:
+    """Canonical source roots for each registry ``source`` value."""
+    return {
+        "arcanum": repo / "skills" / "arcanum",
+        VENDOR_SOURCE: repo / "skills" / "vendor" / VENDOR_SOURCE,
+    }
+
+
+def installed_skill_roots(home: Path) -> dict[str, Path]:
+    """Namespaced roots under ``<home>/skills`` used by the installer."""
+    return {
+        "arcanum": home / "skills" / "arcanum",
+        VENDOR_SOURCE: home / "skills" / "vendor" / VENDOR_SOURCE,
+    }
+
+
+def load_skill_registry(repo: Path) -> tuple[list[dict[str, Any]], dict[str, Any], str]:
+    """Return (entries, raw data, error). An error never raises or writes."""
+    path = repo / "skills" / "registry" / "registry.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return [], {}, f"unreadable {path}: {exc}"
+    entries = data.get("skills", []) if isinstance(data, dict) else data
+    if not isinstance(entries, list):
+        return [], data if isinstance(data, dict) else {}, f"{path}: 'skills' is not a list"
+    clean = [e for e in entries if isinstance(e, dict) and isinstance(e.get("skill_id"), str)]
+    if len(clean) != len(entries):
+        return clean, data if isinstance(data, dict) else {}, f"{path}: non-object registry entries ignored"
+    return clean, data if isinstance(data, dict) else {}, ""
+
+
+def agent_skill_routing(
+    repo: Path,
+    entries: list[dict[str, Any]],
+    *,
+    oc_skills: Path | None = None,
+    manifest_names: Iterable[str] = (),
+) -> tuple[bool, list[str]]:
+    """Check agent definitions, registry routing and OpenCode discovery."""
+    issues: list[str] = []
+    agents_dir = repo / "config" / "agents"
+    for name in AGENTS:
+        if not (agents_dir / f"{name}.md").is_file():
+            issues.append(f"missing agent definition {name}")
+    registry_names = {str(e.get("name") or e["skill_id"]) for e in entries}
+    for name in manifest_names:
+        if name not in registry_names:
+            issues.append(f"manifest skill {name} has no registry entry")
+    for entry in entries:
+        skill_id = str(entry["skill_id"])
+        supported = set(entry.get("supported_agents") or [])
+        absent = [name for name in AGENTS if name not in supported]
+        if absent:
+            issues.append(f"{skill_id}: unsupported agents {', '.join(absent)}")
+        if oc_skills is not None and not (oc_skills / skill_id / "SKILL.md").is_file():
+            issues.append(f"{skill_id}: not discoverable in OpenCode skills root")
+    return not issues, issues
+
+
+def verify_skill_inventory(home: Path, repo: Path) -> dict[str, Any]:
+    """Read-only verification of the five Arcanum and 83 vendored skills.
+
+    ``home`` is the ARCANUM_HOME containing ``skills/arcanum`` and
+    ``skills/vendor/claude-bughunter``. Every installed file is hashed with the
+    registry's line-ending normalization, and the directory content hash is
+    recomputed, so local edits are reported rather than silently accepted.
+    """
+    result: dict[str, Any] = {
+        "ok": False,
+        "counts": {
+            "arcanum": 0,
+            "vendored": 0,
+            "total": 0,
+            "installed_arcanum": 0,
+            "installed_vendored": 0,
+            "installed_total": 0,
+        },
+        "expected_arcanum_ids": sorted(EXPECTED_ARCANUM_SKILLS),
+        "arcanum_ids": [],
+        "vendored_ids": [],
+        "missing": [],
+        "modified": [],
+        "modified_files": {},
+        "unexpected": [],
+        "hash_mismatches": [],
+        "hash_ok": False,
+        "registry_ok": False,
+        "agent_routing_ok": False,
+        "agent_routing_issues": [],
+        "errors": [],
+    }
+    entries, raw, error = load_skill_registry(repo)
+    if error:
+        result["errors"].append(error)
+        return result
+
+    roots = installed_skill_roots(home)
+    by_source: dict[str, list[dict[str, Any]]] = {"arcanum": [], VENDOR_SOURCE: []}
+    seen: set[str] = set()
+    for entry in entries:
+        skill_id = entry["skill_id"]
+        if skill_id in seen:
+            result["errors"].append(f"duplicate registry entry {skill_id}")
+            continue
+        seen.add(skill_id)
+        source = str(entry.get("source") or "")
+        if source in by_source:
+            by_source[source].append(entry)
+        else:
+            result["errors"].append(f"{skill_id}: unknown registry source {source!r}")
+
+    arcanum_ids = sorted(e["skill_id"] for e in by_source["arcanum"])
+    vendored_ids = sorted(e["skill_id"] for e in by_source[VENDOR_SOURCE])
+    result["arcanum_ids"] = arcanum_ids
+    result["vendored_ids"] = vendored_ids
+    result["counts"].update(
+        {
+            "arcanum": len(by_source["arcanum"]),
+            "vendored": len(by_source[VENDOR_SOURCE]),
+            "total": len(entries),
+        }
+    )
+    declared = raw.get("skill_count")
+    if declared != len(entries):
+        result["errors"].append(f"registry skill_count {declared} != {len(entries)} entries")
+    result["registry_ok"] = (
+        not result["errors"]
+        and declared == len(entries) == EXPECTED_SKILL_COUNT
+        and len(by_source["arcanum"]) == len(EXPECTED_ARCANUM_SKILLS)
+        and len(by_source[VENDOR_SOURCE]) == EXPECTED_VENDORED_SKILL_COUNT
+        and arcanum_ids == sorted(EXPECTED_ARCANUM_SKILLS)
+        and all(
+            e.get("content_hash") and isinstance(e.get("file_hashes"), dict)
+            for e in entries
+        )
+    )
+
+    installed: dict[str, set[str]] = {}
+    for source, root in roots.items():
+        installed[source] = (
+            {p.parent.name for p in root.glob("*/SKILL.md") if p.is_file()}
+            if root.is_dir()
+            else set()
+        )
+    result["counts"]["installed_arcanum"] = len(installed["arcanum"])
+    result["counts"]["installed_vendored"] = len(installed[VENDOR_SOURCE])
+    result["counts"]["installed_total"] = sum(len(ids) for ids in installed.values())
+    for source, expected_entries in by_source.items():
+        expected_ids = {e["skill_id"] for e in expected_entries}
+        result["unexpected"].extend(
+            f"{source}/{skill_id}" for skill_id in sorted(installed[source] - expected_ids)
+        )
+
+    for entry in entries:
+        skill_id = entry["skill_id"]
+        root = roots.get(str(entry.get("source") or ""))
+        skill_dir = root / skill_id if root is not None else None
+        if skill_dir is None or not (skill_dir / "SKILL.md").is_file():
+            result["missing"].append(skill_id)
+            continue
+        expected_files = entry.get("file_hashes") or {}
+        actual_files = {
+            p.relative_to(skill_dir).as_posix(): p
+            for p in skill_dir.rglob("*")
+            if p.is_file()
+        }
+        changed: list[str] = []
+        for relative, expected_hash in expected_files.items():
+            path = actual_files.get(relative)
+            if path is None:
+                changed.append(f"missing file {relative}")
+            elif skill_file_sha256(path) != str(expected_hash).lower():
+                changed.append(relative)
+        for relative in sorted(set(actual_files) - set(expected_files)):
+            changed.append(f"unexpected file {relative}")
+        if changed:
+            result["modified"].append(skill_id)
+            result["modified_files"][skill_id] = changed
+        if skill_content_hash(skill_dir) != str(entry.get("content_hash") or "").lower():
+            result["hash_mismatches"].append(skill_id)
+
+    for key in ("missing", "modified", "unexpected", "hash_mismatches"):
+        result[key].sort()
+    result["hash_ok"] = not result["hash_mismatches"] and not result["missing"]
+    routing_ok, issues = agent_skill_routing(repo, entries)
+    result["agent_routing_ok"] = routing_ok
+    result["agent_routing_issues"] = issues
+    result["ok"] = (
+        result["registry_ok"]
+        and result["hash_ok"]
+        and not result["modified"]
+        and not result["unexpected"]
+        and routing_ok
+        and not result["errors"]
+    )
+    return result
+
+
+def _skill_group_issues(inventory: dict[str, Any], ids: list[str]) -> list[str]:
+    wanted = set(ids)
+    problems = wanted & (
+        set(inventory["missing"])
+        | set(inventory["modified"])
+        | set(inventory["hash_mismatches"])
+    )
+    return sorted(problems)
+
+
+def _report_skill_inventory(
+    inventory: dict[str, Any],
+    reporter: Reporter,
+    *,
+    check_only: bool,
+    routing_ok: bool,
+    routing_issues: list[str],
+    routing_detail: str,
+) -> None:
+    counts = inventory["counts"]
+    registry_detail = (
+        f"registry declares {counts['total']} skills "
+        f"({counts['arcanum']} Arcanum, {counts['vendored']} vendored); "
+        f"{counts['installed_total']} installed"
+    )
+    if inventory["errors"]:
+        registry_detail += "; " + "; ".join(inventory["errors"])
+    registry_status = (
+        "Needs manual action" if "unreadable" in " ".join(inventory["errors"]) else "Verified"
+    ) if inventory["registry_ok"] else (
+        "Needs manual action" if not counts["total"] else "Failed"
+    )
+    reporter.add("Skill registry", registry_status, registry_detail)
+
+    groups = (
+        ("Five Arcanum skills", inventory["arcanum_ids"], len(EXPECTED_ARCANUM_SKILLS), "arcanum"),
+        ("Vendored skills", inventory["vendored_ids"], EXPECTED_VENDORED_SKILL_COUNT, VENDOR_SOURCE),
+    )
+    for label, ids, expected, source in groups:
+        issues = _skill_group_issues(inventory, ids)
+        modified = [skill_id for skill_id in issues if skill_id in inventory["modified"]]
+        if not issues:
+            status = "Verified"
+        elif modified or check_only:
+            status = "Needs manual action"
+        else:
+            status = "Failed"
+        extra = [
+            item[len(source) + 1:]
+            for item in inventory["unexpected"]
+            if item.startswith(f"{source}/")
+        ]
+        issues = sorted(set(issues) | set(extra))
+        detail = f"{len(ids)}/{expected} skills"
+        if issues:
+            detail += "; issues: " + ", ".join(issues[:10])
+            if len(issues) > 10:
+                detail += f" (+{len(issues) - 10} more)"
+        else:
+            detail += "; every file hash and content hash matches the registry"
+        reporter.add(label, status, detail)
+
+    route_detail = routing_detail
+    if routing_issues:
+        route_detail += "; issues: " + ", ".join(routing_issues[:10])
+    reporter.add(
+        "Agent skill routing",
+        "Verified" if routing_ok else "Needs manual action",
+        route_detail,
+    )
+
+
 def step_skills(
     paths: Paths,
     manifest: dict[str, Any],
@@ -1399,57 +1706,124 @@ def step_skills(
     check_only: bool,
     state: dict[str, Any],
 ) -> None:
-    sources = [paths.repo / "skills" / "arcanum"]
-    vendor = manifest.get("skills", {}).get("vendor", {})
+    inventory = verify_skill_inventory(paths.home, paths.repo)
+    entries, _raw, registry_error = load_skill_registry(paths.repo)
+
+    sources: dict[str, Path] = {}
+    for source_name, source_dir in registry_skill_roots(paths.repo).items():
+        if source_dir.is_dir():
+            sources[source_name] = source_dir
     vendor_missing: list[str] = []
-    for name, info in vendor.items():
+    for name, info in manifest.get("skills", {}).get("vendor", {}).items():
         local = paths.repo / str(info.get("local_path", ""))
         if local.is_dir():
-            sources.append(local)
+            sources[name] = local
         else:
             vendor_missing.append(f"{name} (pin {info.get('pinned_commit')}, {info.get('upstream')})")
-    registry = paths.repo / "skills" / "registry" / "registry.json"
-    registry_entries: list[str] = []
-    if registry.exists():
-        try:
-            data = json.loads(registry.read_text(encoding="utf-8"))
-            entries = data.get("skills", data) if isinstance(data, dict) else data
-            if isinstance(entries, dict):
-                entries = list(entries.values())
-            for entry in entries:
-                if isinstance(entry, dict) and entry.get("path"):
-                    candidate = paths.repo / str(entry["path"])
-                    if candidate.is_dir():
-                        sources.append(candidate)
-                    else:
-                        registry_entries.append(str(entry.get("name", entry["path"])))
-                elif isinstance(entry, str):
-                    candidate = paths.repo / "skills" / entry
-                    if candidate.is_dir():
-                        sources.append(candidate)
-                    else:
-                        registry_entries.append(entry)
-            reporter.add("Skill registry", "Verified", f"read {registry.relative_to(paths.repo)}; {len(sources)} local skill roots")
-        except (OSError, ValueError) as exc:
-            reporter.add("Skill registry", "Needs manual action", f"unreadable {registry}: {exc}")
-    else:
-        reporter.add("Skill registry", "Needs manual action", f"not present yet: {registry} (created by another agent; non-fatal)")
+
+    oc_skills = paths.opencode_config / "skills"
+    manifest_names = [
+        str(name)
+        for name in manifest.get("skills", {}).get("arcanum", [])
+        if isinstance(name, str)
+    ]
+    discoverable = sum(
+        (oc_skills / str(entry["skill_id"]) / "SKILL.md").is_file()
+        for entry in entries
+    )
+    route_ok, route_issues = agent_skill_routing(
+        paths.repo,
+        entries,
+        oc_skills=oc_skills,
+        manifest_names=manifest_names,
+    )
+    route_detail = (
+        f"{discoverable}/{len(entries)} skills discoverable under {oc_skills}; "
+        f"{len(AGENTS)} agent definitions checked"
+    )
 
     if check_only:
-        reporter.add("Skills", "Needs manual action", f"{len(sources)} local skill roots available for install")
+        _report_skill_inventory(
+            inventory,
+            reporter,
+            check_only=True,
+            routing_ok=route_ok,
+            routing_issues=route_issues,
+            routing_detail=route_detail,
+        )
+        reporter.add(
+            "Skills",
+            "Needs manual action",
+            f"{len(sources)} local skill roots available for install; no files written in --check",
+        )
+        state["skills"] = {
+            "roots": [str(s.relative_to(paths.repo)) for s in sources.values() if is_under(s, paths.repo)],
+            "counts": inventory["counts"],
+            "verified": inventory["ok"],
+            "conflicts": [],
+        }
         return
+
+    # A locally modified skill is never overwritten: skip that whole skill
+    # directory in both destinations and record a conflict instead.
+    protected = set(inventory["modified"])
+    conflicts = sorted(
+        skill_id
+        for skill_id in protected
+        if any((source / skill_id / "SKILL.md").is_file() for source in sources.values())
+    )
     home_skills = paths.home / "skills"
-    oc_skills = paths.opencode_config / "skills"
+    installed_roots = installed_skill_roots(paths.home)
     total = 0
-    for source in sources:
-        total += copy_tree(source, home_skills)
-        total += copy_tree(source, oc_skills)
-    reporter.add("Skills", "Installed", f"installed {total} skill files to {home_skills} and {oc_skills}")
-    state["skills"] = {"roots": [str(s.relative_to(paths.repo)) for s in sources if is_under(s, paths.repo)]}
+    for source_name, source_dir in sources.items():
+        destination = installed_roots.get(source_name, home_skills / source_name)
+        total += copy_tree(source_dir, destination, ignore=protected)
+        total += copy_tree(source_dir, oc_skills, ignore=protected)
+    reporter.add(
+        "Skills",
+        "Installed",
+        f"installed {total} skill files to {home_skills} and {oc_skills}; "
+        f"{len(conflicts)} locally modified skills preserved",
+    )
+    if conflicts:
+        reporter.add(
+            "Skill conflict",
+            "Needs manual action",
+            "preserved locally modified skills (not overwritten): " + ", ".join(conflicts),
+        )
+    if registry_error:
+        reporter.add("Registry entries", "Needs manual action", registry_error)
     if vendor_missing:
-        reporter.add("Vendor skills", "Needs manual action", "not vendored: " + "; ".join(vendor_missing))
-    if registry_entries:
-        reporter.add("Registry skills", "Needs manual action", "listed in registry but missing locally: " + ", ".join(registry_entries))
+        reporter.add("Vendor source", "Needs manual action", "not vendored: " + "; ".join(vendor_missing))
+
+    final_inventory = verify_skill_inventory(paths.home, paths.repo)
+    final_discoverable = sum(
+        (oc_skills / str(entry["skill_id"]) / "SKILL.md").is_file()
+        for entry in entries
+    )
+    final_route_ok, final_route_issues = agent_skill_routing(
+        paths.repo,
+        entries,
+        oc_skills=oc_skills,
+        manifest_names=manifest_names,
+    )
+    _report_skill_inventory(
+        final_inventory,
+        reporter,
+        check_only=False,
+        routing_ok=final_route_ok,
+        routing_issues=final_route_issues,
+        routing_detail=(
+            f"{final_discoverable}/{len(entries)} skills discoverable under {oc_skills}; "
+            f"{len(AGENTS)} agent definitions checked"
+        ),
+    )
+    state["skills"] = {
+        "roots": [str(s.relative_to(paths.repo)) for s in sources.values() if is_under(s, paths.repo)],
+        "counts": final_inventory["counts"],
+        "verified": final_inventory["ok"],
+        "conflicts": conflicts,
+    }
 
 
 def placeholder_map(paths: Paths, legacy_dispatch: str) -> dict[str, str]:
