@@ -177,6 +177,7 @@ def test_install_check_only_branch_is_write_free():
         "Set-Content",
     ):
         assert forbidden not in branch, f"check-only branch must not reference {forbidden}"
+    assert "--python $HostPython" in branch, "check branch must pin the detected interpreter"
 
 
 def test_install_script_normalizes_powershell_flags_for_the_engine():

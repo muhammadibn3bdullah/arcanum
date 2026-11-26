@@ -155,9 +155,9 @@ arc_download() {
   local url="$1" dest="$2" partial="$2.part"
   rm -f "$partial"
   if command -v curl >/dev/null 2>&1; then
-    curl --fail --location --retry 3 --connect-timeout 30 --output "$partial" "$url" >&2
+    curl --fail --location --retry 3 --connect-timeout 30 --output "$partial" "$url" >&2 || return 1
   elif command -v wget >/dev/null 2>&1; then
-    wget --tries=3 --timeout=30 --output-document="$partial" "$url" >&2
+    wget --tries=3 --timeout=30 --output-document="$partial" "$url" >&2 || return 1
   else
     echo "UNSUPPORTED: curl or wget is required to download $url" >&2
     return 1
@@ -194,6 +194,20 @@ arc_bootstrap_python() {
     return 1
   fi
 
+  # Validate python_path before it is used to build the rm -rf target below.
+  # An empty/dot root or any '..' component could delete outside <home>/runtime.
+  root="${python_path%%/*}"
+  if [[ -z "$root" || "$root" == "." || "$root" == ".." ]]; then
+    echo "ERROR: refusing unsafe python_path (invalid root): $python_path" >&2
+    return 1
+  fi
+  case "/$python_path/" in
+    *"/../"*|*"//"*)
+      echo "ERROR: refusing unsafe python_path: $python_path" >&2
+      return 1
+      ;;
+  esac
+
   archive="$home/cache/python/$asset"
   runtime="$home/runtime"
   mkdir -p "$home/cache/python" "$runtime"
@@ -222,7 +236,6 @@ arc_bootstrap_python() {
     fi
   fi
 
-  root="${python_path%%/*}"
   echo "  -> extracting into $runtime" >&2
   rm -rf "$runtime/$root"
   tar -xzf "$archive" -C "$runtime" || return 1

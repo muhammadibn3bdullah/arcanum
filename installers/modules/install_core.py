@@ -810,10 +810,11 @@ def choose_python(injected: str | None = None, *, check_only: bool = False) -> s
     preferred over any host interpreter.
 
     Under ``check_only`` no external tool is executed at all: an injected path
-    is accepted only when it exists on disk, and without an injected path no
-    interpreter is reported so the caller can emit an Unsupported / Needs
-    manual action row without any filesystem writes. Version verification is
-    deferred to a real (non-check) run.
+    is accepted only when it exists on disk. Without an injected path, the
+    interpreter already running this engine is accepted when its
+    ``sys.version_info`` satisfies the minimum -- that is a read-only version
+    check, so a ready host is not falsely reported as Unsupported. Version
+    verification of *other* interpreters is deferred to a real (non-check) run.
     """
     if injected:
         candidate = injected.strip()
@@ -826,7 +827,9 @@ def choose_python(injected: str | None = None, *, check_only: bool = False) -> s
             return candidate
         return None
     if check_only:
-        return None
+        # The engine is already running on sys.executable; reading
+        # sys.version_info is read-only and requires no subprocess or write.
+        return sys.executable if sys.version_info >= MIN_PYTHON else None
 
     candidates: list[str] = []
     if IS_WINDOWS:
@@ -1036,7 +1039,10 @@ def step_tool(
     asset = assets[key]
 
     existing = None
-    on_path = shutil.which(name) if not check_only else None
+    # shutil.which() is a static PATH lookup: it reports an installed tool
+    # without executing it, which keeps --check write-free while still
+    # recognising bun/opencode/maestro installed on PATH.
+    on_path = shutil.which(name)
     for candidate in [paths.bin / f"{name}{SH_SUFFIX}", Path(on_path) if on_path else None]:
         if candidate and candidate.exists():
             if check_only:
@@ -1427,6 +1433,33 @@ def skill_content_hash(skill_dir: Path) -> str:
     return digest.hexdigest()
 
 
+def skill_dir_matches_registry(skill_dir: Path, entry: dict[str, Any]) -> bool:
+    """Return True when a skill directory still matches its registry entry.
+
+    Uses the same line-ending normalization and content hash as
+    :func:`verify_skill_inventory`. Extra or missing files also count as a
+    local modification, so a re-install preserves them instead of overwriting
+    them. Used to protect the flat OpenCode discovery root, which
+    ``verify_skill_inventory`` does not inspect.
+    """
+    if not skill_dir.is_dir() or not (skill_dir / "SKILL.md").is_file():
+        return False
+    expected_files = entry.get("file_hashes")
+    if not isinstance(expected_files, dict) or not expected_files:
+        return False
+    actual_files = {
+        p.relative_to(skill_dir).as_posix(): p
+        for p in skill_dir.rglob("*")
+        if p.is_file()
+    }
+    if set(actual_files) != set(expected_files):
+        return False
+    for relative, expected_hash in expected_files.items():
+        if skill_file_sha256(actual_files[relative]) != str(expected_hash).lower():
+            return False
+    return skill_content_hash(skill_dir) == str(entry.get("content_hash") or "").lower()
+
+
 def registry_skill_roots(repo: Path) -> dict[str, Path]:
     """Canonical source roots for each registry ``source`` value."""
     return {
@@ -1765,11 +1798,20 @@ def step_skills(
         return
 
     # A locally modified skill is never overwritten: skip that whole skill
-    # directory in both destinations and record a conflict instead.
-    protected = set(inventory["modified"])
+    # directory in the destination where it was modified and record a conflict.
+    # Protection is per destination: verify_skill_inventory only checks the
+    # namespaced roots under <home>/skills, while the flat OpenCode discovery
+    # root is written with the same overlay, so hash-check it separately.
+    protected_home = set(inventory["modified"])
+    protected_oc: set[str] = set()
+    entries_by_id = {str(entry["skill_id"]): entry for entry in entries}
+    for skill_id, entry in entries_by_id.items():
+        flat_skill = oc_skills / skill_id
+        if flat_skill.is_dir() and not skill_dir_matches_registry(flat_skill, entry):
+            protected_oc.add(skill_id)
     conflicts = sorted(
         skill_id
-        for skill_id in protected
+        for skill_id in protected_home | protected_oc
         if any((source / skill_id / "SKILL.md").is_file() for source in sources.values())
     )
     home_skills = paths.home / "skills"
@@ -1777,8 +1819,8 @@ def step_skills(
     total = 0
     for source_name, source_dir in sources.items():
         destination = installed_roots.get(source_name, home_skills / source_name)
-        total += copy_tree(source_dir, destination, ignore=protected)
-        total += copy_tree(source_dir, oc_skills, ignore=protected)
+        total += copy_tree(source_dir, destination, ignore=protected_home)
+        total += copy_tree(source_dir, oc_skills, ignore=protected_oc)
     reporter.add(
         "Skills",
         "Installed",

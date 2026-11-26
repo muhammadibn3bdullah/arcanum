@@ -48,6 +48,17 @@ def test_choose_python_rejects_nonexistent_injected_path(tmp_path):
     assert core.choose_python(str(tmp_path / "missing-python")) is None
 
 
+def test_choose_python_check_only_accepts_running_interpreter():
+    """--check accepts sys.executable using only read-only sys.version_info.
+
+    The engine is already running on this interpreter, so its version is known
+    to satisfy ``pyproject.toml``; no subprocess is spawned and no path is
+    written. A fully ready host must not be reported as Unsupported.
+    """
+    expected = sys.executable if sys.version_info >= core.MIN_PYTHON else None
+    assert core.choose_python(check_only=True) == expected
+
+
 def test_parse_args_accepts_python_option(tmp_path):
     choice = str(tmp_path / "chosen-python")
     assert core.parse_args(["install", "--python", choice]).python == choice
@@ -156,3 +167,85 @@ def test_check_reports_manual_action_without_running_any_tool(tmp_path, monkeypa
     assert not xdg_config.exists(), "--check wrote to the config dir"
     assert not xdg_cache.exists(), "--check wrote to the cache dir"
     assert not xdg_state.exists(), "--check wrote to the state dir"
+
+
+def test_check_reports_python_verified_and_succeeds_write_free(tmp_path, monkeypatch, capsys):
+    """A ready host exits 0 with 'Python: Verified' and no filesystem writes."""
+    fake_bin = tmp_path / "fakebin"
+    fake_bin.mkdir()
+    sentinel = tmp_path / "tool-runs.log"
+    script = "#!/bin/sh\nprintf '%s\\n' \"$0\" >> \"$SENTINEL_DIR/tool-runs.log\"\nexit 0\n"
+    for name in ("opencode", "bun", "maestro", "maestro-cli"):
+        target = fake_bin / name
+        target.write_text(script, encoding="utf-8")
+        target.chmod(0o755)
+
+    home = tmp_path / "home"
+    arc_home = tmp_path / "arcanum-home"
+    xdg_config = tmp_path / "xdg-config"
+    xdg_cache = tmp_path / "xdg-cache"
+    xdg_state = tmp_path / "xdg-state"
+    monkeypatch.setenv("PATH", str(fake_bin))
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("ARCANUM_HOME", str(arc_home))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(xdg_config))
+    monkeypatch.setenv("XDG_CACHE_HOME", str(xdg_cache))
+    monkeypatch.setenv("XDG_STATE_HOME", str(xdg_state))
+    monkeypatch.setenv("SENTINEL_DIR", str(tmp_path))
+    monkeypatch.delenv("ARCANUM_BOOTSTRAP_PYTHON", raising=False)
+    monkeypatch.delenv("ARCANUM_PYTHON", raising=False)
+
+    args = build_args(tmp_path)
+    paths = core.build_paths(args)
+    reporter = core.Reporter()
+    manifest = core.load_manifest(paths.repo, reporter)
+    result = core.cmd_install(paths, manifest, reporter, args)
+    capsys.readouterr()
+
+    rows = {row.component: row for row in reporter.rows}
+    assert rows["Python"].status == "Verified", rows["Python"]
+    assert not reporter.bad(), reporter.as_dict()
+    assert result == 0
+    # PATH-installed tools are detected statically, never executed.
+    for name in ("bun", "opencode"):
+        assert str(fake_bin / name) in rows[name].detail, rows[name]
+    assert not sentinel.exists(), "a tool was executed during --check"
+    assert not arc_home.exists(), "--check created ARCANUM_HOME"
+    assert not home.exists(), "--check wrote under HOME"
+    assert not xdg_config.exists(), "--check wrote to the config dir"
+    assert not xdg_cache.exists(), "--check wrote to the cache dir"
+    assert not xdg_state.exists(), "--check wrote to the state dir"
+
+
+def test_step_tool_check_reports_path_installed_tool_without_executing(tmp_path, monkeypatch):
+    """step_tool uses shutil.which() in check mode and never runs --version."""
+    fake_bin = tmp_path / "fakebin"
+    fake_bin.mkdir()
+    sentinel = tmp_path / "tool-runs.log"
+    tool = fake_bin / "bun"
+    tool.write_text(
+        "#!/bin/sh\nprintf '%s\\n' \"$0\" >> \"$SENTINEL_DIR/tool-runs.log\"\nexit 0\n",
+        encoding="utf-8",
+    )
+    tool.chmod(0o755)
+    monkeypatch.setenv("PATH", str(fake_bin))
+    monkeypatch.setenv("SENTINEL_DIR", str(tmp_path))
+
+    args = build_args(tmp_path)
+    paths = core.build_paths(args)
+    reporter = core.Reporter()
+    section = {
+        "version": "1.4.5",
+        "assets": {core.asset_key(): {"url": "https://example.invalid/bun.zip"}},
+    }
+    found = core.step_tool(
+        "bun", section, paths, reporter,
+        check_only=True, skip_downloads=True, timeout=5,
+    )
+
+    assert found is None  # --check never returns an executable path
+    row = reporter.rows[-1]
+    assert row.component == "bun"
+    assert str(tool) in row.detail, row
+    assert row.status == "Needs manual action", row
+    assert not sentinel.exists(), "step_tool executed a PATH tool during --check"

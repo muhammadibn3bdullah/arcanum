@@ -55,7 +55,9 @@ $HostPython = Get-ArcHostPython -InstallHome $ArcHome -RepoRoot $RepoRoot
 
 if ($CheckOnly) {
     if ($null -ne $HostPython) {
-        & $HostPython $Core install --repo $RepoRoot @EngineArgs
+        # Pin the interpreter we already detected so the write-free engine
+        # never has to re-discover (or execute) another Python.
+        & $HostPython $Core install --repo $RepoRoot --python $HostPython @EngineArgs
         exit $LASTEXITCODE
     }
     Write-ArcWriteFreeCheck -InstallHome $ArcHome -RepoRoot $RepoRoot -Key $AssetKey

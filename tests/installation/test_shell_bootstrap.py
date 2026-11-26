@@ -72,6 +72,18 @@ def test_check_branch_calls_only_the_write_free_helper():
         assert forbidden not in branch, f"--check branch must not reference {forbidden}"
 
 
+def test_check_branch_passes_detected_python_to_engine():
+    """The check branch must pin the interpreter it already detected.
+
+    Without ``--python`` the engine cannot trust the host's PATH in a
+    write-free run and would wrongly report ``Python: Unsupported``.
+    """
+    text = INSTALL_SH.read_text(encoding="utf-8")
+    match = re.search(r"^if \(\( CHECK_ONLY \)\); then\n(.*?)^fi\n", text, re.S | re.M)
+    assert match, "install.sh must have an explicit check-only branch"
+    assert '--python "$PYTHON_BIN"' in match.group(1)
+
+
 def test_write_free_check_helper_never_downloads_extracts_or_writes():
     body = function_body(COMMON_SH.read_text(encoding="utf-8"), "arc_write_free_check")
     for forbidden in ("curl", "wget", "tar ", "mkdir", "rm -", "mv ", "arc_download", "arc_extract"):
@@ -243,4 +255,59 @@ def test_bootstrap_rejects_checksum_mismatch_before_extracting(tmp_path):
     assert "SHA-256 mismatch" in result.stderr
     assert not (home / "runtime" / "python").exists()
     assert not (home / "cache" / "python" / "cpython-3.12.16+20261124-test.tar.gz").exists()
+
+
+def test_bootstrap_rejects_unsafe_python_path_before_rm(tmp_path):
+    """A malformed python_path must never reach `rm -rf "$runtime/$root"`."""
+    source = tmp_path / "source.tar.gz"
+    make_python_archive(source)
+    repo = tmp_path / "repo"
+    write_bootstrap_manifest(repo, source)
+    manifest_path = repo / "config" / "dependencies.json"
+    data = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    for unsafe in ("../escape", "python/../../escape", "/absolute/python", "python//bin"):
+        data["python"]["bootstrap"]["assets"]["test-x64"]["python_path"] = unsafe
+        # arc_manifest_field is a line-oriented awk parser: keep it pretty-printed.
+        manifest_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+        home = tmp_path / "arcanum-home"
+        sentinel = home / "keep-me"
+        sentinel.parent.mkdir(parents=True, exist_ok=True)
+        sentinel.write_text("do not delete", encoding="utf-8")
+
+        result = run_bash(
+            ["-c", f'source "{COMMON_SH}"; arc_bootstrap_python "{home}" "{repo}" test-x64']
+        )
+        assert result.returncode != 0, result.stderr
+        assert "unsafe python_path" in result.stderr, result.stderr
+        assert sentinel.read_text(encoding="utf-8") == "do not delete"
+
+
+def test_arc_download_failure_does_not_promote_partial(tmp_path):
+    """A failed transfer must return before `mv` can promote a truncated file."""
+    sandbox_bin = tmp_path / "bin"
+    sandbox_bin.mkdir()
+    curl = sandbox_bin / "curl"
+    curl.write_text(
+        "#!/bin/sh\n"
+        "while [ \"$#\" -gt 0 ]; do\n"
+        "  if [ \"$1\" = \"--output\" ]; then printf 'truncated' > \"$2\"; break; fi\n"
+        "  shift\n"
+        "done\n"
+        "printf 'simulated curl failure\\n' >&2\n"
+        "exit 22\n",
+        encoding="utf-8",
+    )
+    curl.chmod(0o755)
+
+    dest = tmp_path / "asset.bin"
+    result = subprocess.run(
+        ["bash", "-c", f'source "{COMMON_SH}"; arc_download "https://example.invalid/a" "{dest}"'],
+        capture_output=True,
+        text=True,
+        env={"PATH": f"{sandbox_bin}:/usr/bin:/bin"},
+        check=False,
+    )
+    assert result.returncode != 0, result.stdout + result.stderr
+    assert not dest.exists(), "a failed transfer must not be promoted to dest"
 

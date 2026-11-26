@@ -157,6 +157,42 @@ def test_step_skills_preserves_locally_modified_skill(tmp_path):
     assert state["skills"]["conflicts"] == ["say_hello"]
 
 
+def test_step_skills_preserves_locally_modified_flat_root_skill(tmp_path):
+    """A locally edited skill in the flat OpenCode root survives re-install.
+
+    The flat root (<opencode-config>/skills/<id>) is written with the same
+    overlay as the namespaced roots, so protection must be computed per
+    destination: a local edit there must be skipped and reported as a conflict
+    rather than silently overwritten.
+    """
+    paths = build_paths(tmp_path)
+    core.step_skills(paths, {}, core.Reporter(), check_only=False, state={})
+
+    flat = paths.opencode_config / "skills" / "say_hello" / "SKILL.md"
+    assert flat.is_file()
+    local_text = flat.read_text(encoding="utf-8") + "\n# LOCAL FLAT EDIT - KEEP ME\n"
+    flat.write_text(local_text, encoding="utf-8")
+
+    assert core.skill_dir_matches_registry(
+        flat.parent,
+        next(
+            entry
+            for entry in core.load_skill_registry(ROOT)[0]
+            if entry["skill_id"] == "say_hello"
+        ),
+    ) is False
+
+    reporter = core.Reporter()
+    state: dict = {}
+    core.step_skills(paths, {}, reporter, check_only=False, state=state)
+
+    assert flat.read_text(encoding="utf-8") == local_text
+    rows = {row.component: row for row in reporter.rows}
+    assert "Skill conflict" in rows
+    assert "say_hello" in rows["Skill conflict"].detail
+    assert "say_hello" in state["skills"]["conflicts"]
+
+
 def test_step_skills_check_is_write_free(tmp_path):
     paths = build_paths(tmp_path)
     reporter = core.Reporter()

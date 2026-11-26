@@ -12,6 +12,12 @@ The row format is intentionally compatible with the tolerant CI checker in
 ``.github/workflows/ci.yml``: one or more whitespace characters separate the
 digest from the path, and an optional binary-mode ``*`` is accepted.
 
+Six additional ``# pinned-artifact <sha256> <asset>`` rows record the SHA-256 of
+the standalone CPython archives pinned in ``config/dependencies.json``. Those
+assets are downloaded at install time, not stored in the tree, so the rows are
+informational: the ``#`` prefix is ignored by ``parse_rows``, by
+``verify_manifest``, and by ``sha256sum -c``, while the source rows stay intact.
+
 The module also exposes the local half of the release-alignment check:
 ``git_head`` returns the tested commit SHA and ``release_tag_matches`` compares
 a GitHub API tag-target SHA against it. No network access and no writes happen
@@ -22,16 +28,19 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import re
 import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_NAME = "checksums.txt"
+DEPENDENCIES_NAME = "config/dependencies.json"
 # A manifest cannot hash itself; every other tracked file is included.
 EXCLUDED = frozenset({MANIFEST_NAME})
 
 CI_ROW = re.compile(r"^([0-9a-fA-F]{64})\s+\*?(.+?)\s*$")
+PINNED_ROW = re.compile(r"^[0-9a-f]{64}$")
 GIT_SHA = re.compile(r"^[0-9a-fA-F]{40}$")
 
 
@@ -53,9 +62,40 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def pinned_artifact_rows(root: Path = ROOT) -> list[str]:
+    """Informational rows for the pinned standalone CPython archive digests.
+
+    These assets are downloaded when the host has no suitable Python, so they
+    are not files in the tree. The leading ``#`` keeps them out of
+    ``parse_rows``/``verify_manifest`` and is skipped by ``sha256sum -c``.
+    """
+    path = root / DEPENDENCIES_NAME
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    if not isinstance(data, dict):
+        return []
+    bootstrap = data.get("python", {}).get("bootstrap", {})
+    assets = bootstrap.get("assets", {}) if isinstance(bootstrap, dict) else {}
+    if not isinstance(assets, dict):
+        return []
+    rows: list[str] = []
+    for key in sorted(assets):
+        entry = assets[key]
+        if not isinstance(entry, dict):
+            continue
+        digest = str(entry.get("sha256") or "").lower()
+        asset = str(entry.get("asset") or "")
+        if PINNED_ROW.fullmatch(digest) and asset and "\n" not in asset:
+            rows.append(f"# pinned-artifact {digest} {asset}")
+    return rows
+
+
 def build_rows(root: Path = ROOT) -> list[str]:
-    """Build manifest rows for the current tree."""
-    return [f"{sha256_file(root / name)}  {name}" for name in tracked_files(root)]
+    """Build source digest rows for the tree plus informational pinned rows."""
+    source_rows = [f"{sha256_file(root / name)}  {name}" for name in tracked_files(root)]
+    return source_rows + pinned_artifact_rows(root)
 
 
 def parse_rows(text: str) -> dict[str, str]:

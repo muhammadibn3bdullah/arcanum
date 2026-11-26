@@ -15,6 +15,7 @@ the release operator, using :func:`release_tag_matches` on the API-provided SHA.
 from __future__ import annotations
 
 import importlib.util
+import json
 import re
 import subprocess
 from pathlib import Path
@@ -73,10 +74,37 @@ def test_checksums_digests_match_current_files():
 
 
 def test_every_manifest_row_matches_ci_tolerance():
-    lines = [line for line in manifest_text().splitlines() if line.strip()]
+    # Informational '# pinned-artifact' rows are ignored by both the CI checker
+    # and sha256sum -c; only real source rows must match the tolerant regex.
+    lines = [
+        line
+        for line in manifest_text().splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    ]
     assert lines, "checksums.txt is empty"
     for line in lines:
         assert CI_ROW.match(line.strip()), f"unparseable checksum row: {line!r}"
+
+
+def test_checksums_records_all_six_pinned_cpython_artifacts():
+    deps = json.loads((ROOT / "config" / "dependencies.json").read_text(encoding="utf-8"))
+    assets = deps["python"]["bootstrap"]["assets"]
+    assert len(assets) == 6
+
+    pinned: dict[str, str] = {}
+    for line in manifest_text().splitlines():
+        match = re.match(r"^# pinned-artifact ([0-9a-fA-F]{64}) (.+)$", line.strip())
+        if match:
+            pinned[match.group(2)] = match.group(1).lower()
+    for key, entry in assets.items():
+        assert pinned.get(entry["asset"]) == entry["sha256"].lower(), key
+
+
+def test_generator_emits_pinned_artifact_rows():
+    gen = load_generator()
+    pinned = [row for row in gen.build_rows(ROOT) if row.startswith("# pinned-artifact ")]
+    assert len(pinned) == 6
+    assert gen.verify_manifest(ROOT)[0] is True
 
 
 # --- release tag / tested commit alignment ------------------------------------

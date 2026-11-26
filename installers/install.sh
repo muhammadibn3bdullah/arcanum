@@ -54,7 +54,9 @@ fi
 
 if (( CHECK_ONLY )); then
   if [[ -n "$PYTHON_BIN" ]]; then
-    exec "$PYTHON_BIN" "$CORE" install --repo "$REPO_ROOT" "$@"
+    # Pin the interpreter we already detected: the write-free engine must not
+    # have to re-discover (or execute) another Python to report its status.
+    exec "$PYTHON_BIN" "$CORE" install --repo "$REPO_ROOT" --python "$PYTHON_BIN" "$@"
   fi
   ASSET_KEY="$(arc_platform_asset_key)" || exit 2
   arc_write_free_check "$ARCANUM_HOME_DIR" "$REPO_ROOT" "$ASSET_KEY"
