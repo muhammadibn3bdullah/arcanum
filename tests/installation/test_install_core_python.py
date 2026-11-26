@@ -16,9 +16,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 CORE_PATH = ROOT / "installers" / "modules" / "install_core.py"
 
-_spec = importlib.util.spec_from_file_location("install_core", CORE_PATH)
+# Python 3.12's dataclasses resolves dataclass fields via
+# sys.modules[cls.__module__], so exec_module needs the module registered first.
+# Use a test-specific name to avoid colliding with other importlib-loaded copies.
+_MODULE_NAME = "install_core_for_python_tests"
+_spec = importlib.util.spec_from_file_location(_MODULE_NAME, CORE_PATH)
 core = importlib.util.module_from_spec(_spec)
 assert _spec.loader is not None
+sys.modules[_MODULE_NAME] = core
 _spec.loader.exec_module(core)
 
 
