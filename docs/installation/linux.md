@@ -2,7 +2,11 @@
 
 ## Prerequisites
 
-- Python 3.12 or newer (from your distribution, pyenv, or another installer).
+- **No Python prerequisite.** `install.sh` reuses a host Python 3.12+ or
+  bootstraps a pinned, SHA-256-verified standalone CPython into
+  `<ARCANUM_HOME>/runtime`. Host tools (OS-level, not Python): `curl` or `wget`,
+  `tar`, `awk`, `wc`, and `sha256sum` or `shasum`. If any is missing, the
+  installer prints `UNSUPPORTED` with a manual fallback and downloads nothing.
 - Git.
 - Maestro CLI v1.1.1-RC from RunMaestro/Maestro and OpenCode v1.19.6, available
   on `PATH` or at the paths set in `.env` (`MAESTRO_CLI`, `OPENCODE_CLI`).
@@ -15,15 +19,24 @@
 git clone https://github.com/muhammadibn3bdullah/arcanum.git
 cd arcanum
 
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install -e . pytest pydantic discord.py mcp
-
-bash installers/install.sh
+bash installers/install.sh --check --non-interactive  # write-free preflight
+bash installers/install.sh                           # bootstrap Python if needed
 ```
 
 Run `bash installers/install.sh --help` to see the options this installer
-actually ships with; do not assume flags from other projects.
+actually ships with; do not assume flags from other projects. `--check` never
+downloads, extracts, creates directories, or writes a report.
+
+### Manual fallback
+
+If the bootstrap cannot run (a host tool is missing or there is no pinned asset
+for your architecture), install Python 3.12+ yourself, create a venv with
+`python3 -m venv .venv && . .venv/bin/activate && python -m pip install -e . pytest pydantic discord.py mcp`,
+set `ARCANUM_PYTHON` to that interpreter, and re-run `install.sh`. An existing
+interpreter or venv is never overwritten. The installer verifies all five
+Arcanum skills and the 83 vendored skills (88 total) after install and preserves
+locally modified skills instead of overwriting them. Provider authentication is
+separate: run `opencode auth login` yourself after installing.
 
 ## Configure and initialize state
 

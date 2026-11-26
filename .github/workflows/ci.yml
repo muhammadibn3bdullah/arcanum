@@ -56,6 +56,33 @@ jobs:
             echo "::notice::registry not present in this checkout; skipping registry validation"
           fi
 
+      - name: Bootstrap manifest validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_dependencies.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path("config/dependencies.json").read_text(encoding="utf-8"))
+          bootstrap = manifest["python"]["bootstrap"]
+          assets = bootstrap["assets"]
+          expected = {
+              "linux-x64", "linux-arm64", "darwin-x64", "darwin-arm64",
+              "windows-x64", "windows-arm64",
+          }
+          assert set(assets) == expected, set(assets)
+          assert bootstrap["version"] == "3.12.16", bootstrap["version"]
+          for key, spec in assets.items():
+              assert spec["url"].startswith("https://"), key
+              digest = spec["sha256"]
+              assert len(digest) == 64 and all(c in "0123456789abcdef" for c in digest), key
+              assert isinstance(spec["size"], int) and spec["size"] > 0, key
+              assert spec["python_path"], key
+          print("bootstrap manifest OK: six pinned Python assets with SHA-256 and size")
+          PY
+
       - name: Secret scan (grep fallback)
         shell: bash
         run: |
@@ -87,15 +114,14 @@ jobs:
           fi
           echo "No obvious secret literals found in scanned source files"
 
-      - name: Installer and helper syntax checks
+      - name: Bash syntax checks (installers and helpers)
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f installers/install.sh ]; then
-            bash -n installers/install.sh
-          else
-            echo "::notice::installers/install.sh not present; skipping shell syntax check"
-          fi
+          # Include the zero-prerequisite bootstrap helpers, not just the entry points.
+          for script in installers/install.sh installers/uninstall.sh installers/bootstrap/common.sh; do
+            bash -n "$script"
+          done
           while IFS= read -r script; do
             bash -n "$script"
           done < <(find scripts integrations -type f -name '*.sh' 2>/dev/null)
@@ -113,6 +139,110 @@ jobs:
             exit 0
           fi
           pwsh -NoProfile -Command "\$errors = \$null; [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path 'installers/install.ps1'), [ref]\$null, [ref]\$errors); if (\$errors.Count -gt 0) { \$errors | ForEach-Object { Write-Error \$_.Message }; exit 1 }"
+
+      - name: PowerShell parser check (Windows PowerShell 5.1)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $scripts = @(
+            'installers/install.ps1',
+            'installers/uninstall.ps1',
+            'installers/bootstrap/bootstrap.ps1'
+          )
+          foreach ($script in $scripts) {
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $script), [ref]$null, [ref]$errors)
+            if ($errors.Count -gt 0) {
+              $errors | ForEach-Object { Write-Error ("{0}: {1}" -f $script, $_.Message) }
+              exit 1
+            }
+          }
+          Write-Host 'Windows PowerShell 5.1 parser: install.ps1, uninstall.ps1 and bootstrap.ps1 parse cleanly'
+
+      - name: --check write-free verification
+        shell: bash
+        run: |
+          python - <<'PY'
+          import subprocess
+          import sys
+          import tempfile
+          from pathlib import Path
+
+          with tempfile.TemporaryDirectory() as td:
+              home = Path(td) / "arcanum-home"
+              result = subprocess.run(
+                  [sys.executable, "installers/modules/install_core.py", "install",
+                   "--check", "--non-interactive", "--home", str(home)],
+                  capture_output=True,
+                  text=True,
+              )
+              print(result.stdout)
+              if result.stderr:
+                  print(result.stderr, file=sys.stderr)
+              # --check never downloads, extracts or creates ARCANUM_HOME.
+              assert not home.exists(), f"--check created files under {home}"
+              assert "Report: not written" in result.stdout, "--check wrote a report"
+              print("--check performed no filesystem writes")
+          PY
+
+      - name: Five-skill inventory verification (88 skills)
+        shell: bash
+        run: |
+          python -m pytest tests/installation/test_skill_install_verification.py -q
+          python - <<'PY'
+          import importlib.util
+          import shutil
+          import tempfile
+          from pathlib import Path
+
+          root = Path.cwd()
+          spec = importlib.util.spec_from_file_location(
+              "install_core", root / "installers" / "modules" / "install_core.py"
+          )
+          core = importlib.util.module_from_spec(spec)
+          assert spec.loader is not None
+          spec.loader.exec_module(core)
+          with tempfile.TemporaryDirectory() as td:
+              home = Path(td) / "home"
+              shutil.copytree(root / "skills" / "arcanum", home / "skills" / "arcanum")
+              shutil.copytree(
+                  root / "skills" / "vendor" / "claude-bughunter",
+                  home / "skills" / "vendor" / "claude-bughunter",
+              )
+              inventory = core.verify_skill_inventory(home, root)
+              counts = inventory["counts"]
+              assert inventory["ok"], inventory
+              assert (counts["arcanum"], counts["vendored"], counts["total"]) == (5, 83, 88)
+              print("five Arcanum + 83 vendored = 88 skills; every hash verified")
+          PY
+
+      - name: Source checksum manifest (checksums.txt)
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib
+          import re
+          from pathlib import Path
+
+          manifest = Path("checksums.txt")
+          if not manifest.is_file():
+              print("::notice::checksums.txt is not in this checkout; it is generated at release time")
+              raise SystemExit(0)
+          pattern = re.compile(r"^([0-9a-fA-F]{64})\s+\*?(.+?)\s*$")
+          verified = 0
+          for line in manifest.read_text(encoding="utf-8").splitlines():
+              match = pattern.match(line.strip())
+              if not match:
+                  continue  # headings and pinned upstream artifact rows are informational
+              digest, name = match.group(1).lower(), match.group(2)
+              path = Path(name)
+              if path.is_file():
+                  actual = hashlib.sha256(path.read_bytes()).hexdigest()
+                  assert actual == digest, f"checksum mismatch for {name}"
+                  verified += 1
+          print(f"checksums.txt: {verified} tracked source digests verified")
+          PY
 
       - name: Database migration test
         shell: bash

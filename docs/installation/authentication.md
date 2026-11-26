@@ -7,9 +7,12 @@ dashboard), and **target authorization** (which systems may be tested).
 ## Provider authentication
 
 - Default provider is OpenCode (`ARCANUM_LLM_PROVIDER=opencode`). Authenticate
-  your model provider in the OpenCode configuration you use (for example,
-  OpenCode's own auth command) and confirm `opencode run` works for your
-  operator account.
+  your model provider with `opencode auth login` in the OpenCode configuration
+  you use and confirm `opencode run` works for your operator account. This is a
+  separate, interactive step: the installer bootstraps Python and installs
+  binaries but never stores provider credentials, and reports `Needs
+  authentication` until you do this. It is not part of the write-free
+  `installers/install.sh --check` preflight.
 - Maestro v1.1.1-RC from RunMaestro/Maestro owns agent tabs and dispatch. Point
   `MAESTRO_CLI` at the binary if it is not at `~/.local/bin/maestro-cli`, and
   set `MAESTRO_HEAD_AGENT` only if you intentionally rename the lead agent.

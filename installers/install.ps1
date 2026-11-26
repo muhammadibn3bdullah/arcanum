@@ -76,5 +76,7 @@ if ($null -eq $BootstrapPython) {
     $env:ARCANUM_BOOTSTRAP_PYTHON = $BootstrapPython
 }
 
-& $BootstrapPython $Core install --repo $RepoRoot @EngineArgs
+# Pass the chosen interpreter explicitly as well as through the environment;
+# argparse accepts --python and the engine prefers it over host discovery.
+& $BootstrapPython $Core install --repo $RepoRoot --python $BootstrapPython @EngineArgs
 exit $LASTEXITCODE

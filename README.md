@@ -78,7 +78,7 @@ See [docs/architecture/README.md](docs/architecture/README.md) for details.
 
 | Dependency | Version / note |
 | --- | --- |
-| Python | 3.12 or newer |
+| Python | 3.12 or newer, but **no Python prerequisite** for the installers — they bootstrap a pinned standalone CPython when the host has none |
 | Python packages | `pydantic`, `pytest` (dev/tests), `discord.py`, `mcp` |
 | Bun | Dashboard/dev server |
 | OpenCode | v1.19.6 (specialist execution layer) |
@@ -90,40 +90,71 @@ Runtime data is written under `~/.arcanum` unless `ARCANUM_HOME` is set.
 
 ## Quick start
 
-### Linux / macOS
+The installers have **no Python prerequisite** and use one entry point per
+platform:
 
 ```sh
+# Linux / macOS — write-free preflight, then install
 git clone https://github.com/muhammadibn3bdullah/arcanum.git
 cd arcanum
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install -e . pytest pydantic discord.py mcp
-
-bash installers/install.sh          # see docs/installation for flags
-cp .env.example .env                # edit it; never commit real secrets
-python scripts/migrate_database.py  # initializes/upgrades local SQLite state
+bash installers/install.sh --check --non-interactive
+bash installers/install.sh
 ```
-
-### Windows (PowerShell)
 
 ```powershell
+# Windows — Windows PowerShell 5.1 (PowerShell 7 / pwsh is optional)
 git clone https://github.com/muhammadibn3bdullah/arcanum.git
 cd arcanum
-py -3.12 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -e . pytest pydantic discord.py mcp
-
+powershell -ExecutionPolicy Bypass -File .\installers\install.ps1 -Check -NonInteractive
 powershell -ExecutionPolicy Bypass -File .\installers\install.ps1
-copy .env.example .env
-python scripts\migrate_database.py
 ```
 
-Installer flags, platform notes, and optional services are documented in
-[docs/installation/](docs/installation/README.md). The repository ships a CI
-matrix on `ubuntu-latest`, `macos-latest`, and `windows-latest` that runs unit
-tests, registry validation, secret scanning, and static/syntax checks. **No
-fresh-clone end-to-end installation on every platform is claimed here**; CI
-does not install the product on a clean machine.
+The installer reuses a host Python 3.12+ when present; otherwise it downloads
+a pinned, SHA-256-verified standalone CPython into `<ARCANUM_HOME>/runtime` and
+runs the shared engine with that interpreter. Runtime state, databases, and the
+Discord `.env` template are created under `ARCANUM_HOME` (default `~/.arcanum`);
+the checkout is read-only apart from your own local configuration.
+
+Installer flags, manual fallback, platform notes, and optional services are
+documented in [docs/installation/](docs/installation/README.md). The repository
+ships a CI matrix on `ubuntu-latest`, `macos-latest`, and `windows-latest` that
+validates the bootstrap manifest, checks bash syntax and Windows PowerShell 5.1
+parsing, verifies `--check` writes nothing, checks the five-skill inventory and
+`checksums.txt`, and runs unit tests, registry validation, and secret scanning.
+**No fresh-clone end-to-end installation on every platform is claimed here**: CI
+runs tests and static checks only, never publishes a release, and cannot prove
+desktop Maestro integration in a headless runner.
+
+## Install details (zero prerequisite)
+
+- **Bootstrap:** without a host Python 3.12+, the entry point fetches the exact
+  asset pinned in `config/dependencies.json` (`astral-sh/python-build-standalone`
+  CPython 3.12.16), verifies its SHA-256 and byte size, extracts it under
+  `<ARCANUM_HOME>/runtime`, checks `python --version`, and passes the interpreter
+  to `install_core.py` via `--python` / `ARCANUM_BOOTSTRAP_PYTHON`. Nothing is
+  piped into a shell and no admin rights are requested.
+- **Host tooling (not a Python prerequisite):** Linux/macOS need `curl` or
+  `wget`, `tar`, `awk`, `wc`, and `sha256sum` or `shasum`; Windows PowerShell 5.1
+  needs `Invoke-WebRequest`, `Get-FileHash`, and `tar.exe`. If any is missing,
+  the installer reports `UNSUPPORTED` with a manual fallback instead of
+  downloading anything.
+- **Write-free check:** `--check` (or `-Check`) never downloads, extracts,
+  creates directories, or writes a report. With no suitable Python it reports
+  `Needs manual action` for the downstream stages.
+- **Skills:** installed skills live in the namespaced roots
+  `<home>/skills/arcanum` and `<home>/skills/vendor/claude-bughunter`, while
+  OpenCode discovery stays a flat `<opencode-config>/skills` directory. The five
+  Arcanum skills (`api-fingerprint-caido`, `interceptor`, `js_analysis`,
+  `lazy_chunk_downloader`, `say_hello`) are kept separate from the 83 pinned
+  vendored BugHunter skills (88 total); every file hash and content hash is
+  verified after install.
+- **Windows ARM64 is unsupported** because Maestro v1.1.1-RC has no matching
+  artifact. The installer reports `Unsupported` explicitly and never
+  substitutes the unrelated mobile.dev CLI.
+- **Provider auth is separate:** the installer never stores model-provider
+  credentials. After install, authenticate yourself with `opencode auth login`
+  (or your OpenCode profile); until then the installer reports
+  `Needs authentication`.
 
 Run the tests locally with:
 
@@ -148,11 +179,14 @@ Never commit `.env` or tokens; see [.env.example](.env.example).
 
 ## Supported platforms
 
-The declared installer targets are macOS/Linux (`installers/install.sh`) and
-Windows (`installers/install.ps1`), backed by a shared Python engine. The
-Python core is platform-independent (Python 3.12+, SQLite). The dashboard uses
-Bun and binds to localhost by default. Optional Burp/Caido integration requires
-those tools to be installed separately. See platform notes in
+The declared installer targets are macOS/Linux x64 and ARM64
+(`installers/install.sh`) and Windows x64 (`installers/install.ps1`), backed by
+a shared Python engine. The Python core is platform-independent (Python 3.12+,
+SQLite). **Windows ARM64 is unsupported** because Maestro v1.1.1-RC publishes no
+matching artifact; the installer reports `Unsupported` and offers a manual
+fallback. The dashboard uses Bun and binds to localhost by default. Optional
+Burp/Caido integration requires those tools to be installed separately. See the
+platform matrix and host-tool notes in
 [docs/installation/](docs/installation/README.md).
 
 ## Troubleshooting, upgrade, and removal

@@ -6,9 +6,12 @@
    `arcanum.db`, `arcanum-approvals.sqlite`, and `arcanum-tabs.sqlite`.
 2. Update the checkout: `git pull` (or replace the checkout for a published
    release).
-3. Re-run the platform installer (`installers/install.sh` or
-   `installers/install.ps1`) so agent/skill wiring reflects the new tree. Use
-   the installer's own help output for flags.
+3. Re-run the platform installer (`installers/install.sh` or, with Windows
+   PowerShell 5.1, `installers/install.ps1`) so agent/skill wiring reflects the
+   new tree. There is no Python prerequisite: the installer reuses a host Python
+   3.12+ or bootstraps the pinned runtime again. Use a write-free preflight first
+   (`--check` / `-Check`) to see what would change; it never downloads or
+   writes. Use the installer's own help output for flags.
 4. Initialize or upgrade local schema:
    `python scripts/migrate_database.py`. It adds missing tables without
    overwriting existing data and prints the paths it used.

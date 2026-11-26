@@ -19,16 +19,43 @@ read from.
 ```
 
 ```powershell
-# Windows (PowerShell 7)
-pwsh ./installers/install.ps1 -Check -NonInteractive
-pwsh ./installers/install.ps1
+# Windows — Windows PowerShell 5.1 is the supported baseline
+powershell -ExecutionPolicy Bypass -File .\installers\install.ps1 -Check -NonInteractive
+powershell -ExecutionPolicy Bypass -File .\installers\install.ps1
+# PowerShell 7 is optional: pwsh ./installers/install.ps1 -Check
 ```
+
+## Zero-prerequisite bootstrap
+
+`install.sh` and `install.ps1` do not require Python. They first reuse an
+existing Python >= 3.12 (explicit `ARCANUM_PYTHON`, an existing venv, or one on
+`PATH`); otherwise they bootstrap the pinned standalone CPython described by
+`python.bootstrap` in `../config/dependencies.json` (CPython 3.12.16 from
+`astral-sh/python-build-standalone`) into `<ARCANUM_HOME>/runtime`. The archive
+SHA-256 and byte size are verified before extraction, and the interpreter is
+passed to the engine via `--python` / `ARCANUM_BOOTSTRAP_PYTHON`. No remote
+script is piped into a shell and no admin rights are requested.
+
+Host tools are still required at the OS level, which is not a Python
+prerequisite:
+
+- Linux/macOS: `curl` or `wget`, `tar`, `awk`, `wc`, and `sha256sum` or `shasum`.
+- Windows: PowerShell 5.1 builtins `Invoke-WebRequest` and `Get-FileHash`, plus
+  `tar.exe` (Windows 10 1803+).
+
+When a host tool is missing, or a platform has no pinned artifact, the installer
+prints `UNSUPPORTED` with a **manual** fallback and makes no download. **Windows
+ARM64 is unsupported** overall because Maestro v1.1.1-RC has no matching
+artifact. `--check` / `-Check` stays **write-free**: it never downloads,
+extracts, creates directories, or writes a report; without a suitable Python it
+reports `Needs manual action` for the downstream stages.
 
 Useful flags: `--home PATH` (override `ARCANUM_HOME`), `--prefix PATH` (move
 `bin/` and `tools/`), `--repo PATH`, `--opencode-config PATH`,
-`--maestro-config PATH`, `--data-dir PATH`, `--skip-downloads`, `--skip-tests`,
-`--no-start-dashboard`, `--non-interactive`, `--check`, `--timeout SECONDS`.
-Both uninstall wrappers accept `--check` for a dry run.
+`--maestro-config PATH`, `--data-dir PATH`, `--python PATH` (or
+`ARCANUM_BOOTSTRAP_PYTHON` / `ARCANUM_PYTHON`), `--skip-downloads`,
+`--skip-tests`, `--no-start-dashboard`, `--non-interactive`, `--check`,
+`--timeout SECONDS`. Both uninstall wrappers accept `--check` for a dry run.
 
 ## Status matrix
 
@@ -68,6 +95,11 @@ script is fetched and no mobile.dev/npm CLI is executed.
   `scripts/wire_maestro_agents.py` without running `main()`, then copied
   byte-for-byte into `../config/opencode.agents.json` and
   `../config/agents/*.md`. The installer re-checks that equality before writing.
+* **Skills:** the installer writes to the namespaced roots
+  `<home>/skills/arcanum` and `<home>/skills/vendor/claude-bughunter` and
+  verifies all five Arcanum skills plus the 83 pinned vendored skills (88 total)
+  by per-file and content hash. OpenCode discovery remains a flat
+  `<opencode-config>/skills` directory.
 
 ## Known limitations / manual steps
 
